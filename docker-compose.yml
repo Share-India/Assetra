@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: assetra-db
+    restart: unless-stopped
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max_allowed_packet=128M
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-AssetraRoot2026!}
+      MYSQL_DATABASE: ${DB_NAME:-far_app}
+      MYSQL_USER: ${DB_USER:-far_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-AssetraSecurePass2026!}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD:-AssetraRoot2026!} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    networks:
+      - assetra-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assetra-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-far_app}
+      - DB_USER=${DB_USER:-far_user}
+      - DB_PASSWORD=${DB_PASSWORD:-AssetraSecurePass2026!}
+      - JWT_SECRET=${JWT_SECRET:-please_set_a_secure_jwt_secret_at_least_40_chars_in_env}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.8-flash}
+      - FRONTEND_URL=${FRONTEND_URL:-https://assetra.shareindiainsurance.com,http://localhost}
+      - PORT=8000
+      - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-25}
+      - MAX_ROWS_PER_FILE=${MAX_ROWS_PER_FILE:-30000}
+      - DAILY_ANALYSES_PER_USER=${DAILY_ANALYSES_PER_USER:-10}
+      - ALLOWED_EMAIL_DOMAINS=${ALLOWED_EMAIL_DOMAINS:-shareindia.com,shareindiainsurance.com}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-communication.ins@shareindia.co.in}
+      - REQUIRE_ADMIN_APPROVAL=${REQUIRE_ADMIN_APPROVAL:-false}
+      - REQUIRE_EMAIL_VERIFICATION=${REQUIRE_EMAIL_VERIFICATION:-false}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_SENDER_NAME=${MAIL_SENDER_NAME:-Share India Insurance}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - backend_logs:/app/logs
+      - backend_downloads:/app/downloads
+    networks:
+      - assetra-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
+    container_name: assetra-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot
+    depends_on:
+      - backend
+    networks:
+      - assetra-network
+
+volumes:
+  mysql_data:
+  backend_logs:
+  backend_downloads:
+
+networks:
+  assetra-network:
+    driver: bridge

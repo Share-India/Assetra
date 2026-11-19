@@ -1,0 +1,15 @@
+.git
+.vscode
+.idea
+node_modules
+dist
+frontend/node_modules
+frontend/dist
+backend/venv
+backend/venv2
+backend/logs
+backend/downloads
+*.log
+__pycache__
+*.pyc
+*.pyo

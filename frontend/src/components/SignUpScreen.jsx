@@ -1,0 +1,857 @@
+import React, { useState, useEffect } from "react";
+import { User, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, ArrowLeft, KeyRound, RefreshCw, ExternalLink } from "lucide-react";
+import TermsModal from "./TermsModal";
+import PrivacyModal from "./PrivacyModal";
+import AssetraBrandLockup from "./AssetraBrandLockup";
+
+export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword, onLoginSuccess, apiBaseUrl }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [consented, setConsented] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Email verification step state
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [resendStatus, setResendStatus] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Modals for Terms & Privacy
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [devCode, setDevCode] = useState("");
+
+  useEffect(() => {
+    document.title = awaitingVerification ? "Verify Email | Assetra" : "Create Account | Assetra";
+  }, [awaitingVerification]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+    if (!email.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (!consented) {
+      setError("You must agree to the Terms of Use and Privacy Policy to create an account.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let res;
+      try {
+        res = await fetch(`${apiBaseUrl}/auth/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name.trim(),
+            email: email.trim(),
+            password: password,
+            confirm_password: confirmPassword,
+            consented: true
+          })
+        });
+      } catch (netErr) {
+        throw new Error(
+          `Cannot connect to backend server at ${apiBaseUrl}. Please verify uvicorn is running on port 8001.`
+        );
+      }
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.detail || "Sign-up failed. Please check your information.");
+      }
+
+      if (data.status === "unverified_resend") {
+        setResendStatus(data.message || "An unverified account with this email already exists. A new verification code has been sent.");
+      }
+
+      if (data.dev_code) {
+        setDevCode(data.dev_code);
+        setVerificationCode(data.dev_code);
+      }
+
+      // Smoothly switch to entering the 6-digit verification code
+      setAwaitingVerification(true);
+      setResendCooldown(60);
+      setError("");
+    } catch (err) {
+      setError(err.message || "An error occurred while creating your account.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async (e) => {
+    e.preventDefault();
+    setError("");
+    setResendStatus("");
+
+    if (!verificationCode.trim()) {
+      setError("Please enter the 6-digit verification code.");
+      return;
+    }
+
+    setVerificationLoading(true);
+    try {
+      const res = await fetch(`${apiBaseUrl}/auth/verify-code`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          code: verificationCode.trim()
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.detail || "Verification failed. Please check your code.");
+      }
+
+      if (data.token && onLoginSuccess) {
+        onLoginSuccess(data.token, data.user);
+      } else {
+        onNavigateLogin();
+      }
+    } catch (err) {
+      setError(err.message || "Invalid verification code.");
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (resendCooldown > 0) return;
+    setError("");
+    setResendStatus("Sending new code...");
+    try {
+      const res = await fetch(`${apiBaseUrl}/auth/resend-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.detail || "Failed to resend code. Please try again.");
+      }
+      setResendCooldown(60);
+      if (data.dev_code) {
+        setDevCode(data.dev_code);
+        setVerificationCode(data.dev_code);
+        setResendStatus(`Development Mode: Verification code generated: ${data.dev_code}`);
+      } else {
+        setResendStatus(data.message || "A new 6-digit code has been dispatched to your inbox.");
+      }
+    } catch (err) {
+      setError(err.message || "Failed to resend code. Please try again.");
+      setResendStatus("");
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: "100dvh",
+      width: "100%",
+      background: "linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px 16px",
+      paddingTop: "max(24px, env(safe-area-inset-top, 0px))",
+      paddingBottom: "max(24px, env(safe-area-inset-bottom, 0px))",
+      fontFamily: "'Inter', sans-serif",
+      boxSizing: "border-box",
+      overflowY: "auto"
+    }}>
+      <style>{`
+        .far-auth-card {
+          width: 100%;
+          max-width: 440px;
+          min-width: 0;
+          background: rgba(255, 255, 255, 0.98);
+          border-radius: 16px;
+          padding: 32px 28px;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+          box-sizing: border-box;
+          margin: 0 auto;
+        }
+        @media (max-width: 767px) {
+          input {
+            font-size: 16px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .far-auth-card {
+            max-width: 100% !important;
+            padding: 24px 18px !important;
+            border-radius: 14px !important;
+          }
+        }
+      `}</style>
+
+      {/* Terms & Privacy Modals */}
+      <TermsModal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} />
+      <PrivacyModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
+
+      <div style={{
+        width: "100%",
+        maxWidth: 440,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        margin: "auto 0"
+      }}>
+        {/* Brand Lockup: White version on dark panel */}
+        <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+          <AssetraBrandLockup theme="dark" iconSize={46} fontSize={22} taglineSize={12} align="center" />
+        </div>
+
+        <div className="far-auth-card">
+        {/* Card Header */}
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <h1 style={{
+            fontSize: 22,
+            fontWeight: 700,
+            color: "#0b192c",
+            margin: "0 0 6px 0",
+            letterSpacing: "-0.02em"
+          }}>
+            {awaitingVerification ? "Verify Your Email" : "Create Your Account"}
+          </h1>
+          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+            {awaitingVerification
+              ? `We sent a 6-digit code to ${email}`
+              : "Create an account for Assetra"}
+          </p>
+        </div>
+
+        {/* Error Alert */}
+        {error && (
+          <div style={{
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            borderRadius: 8,
+            padding: "12px 14px",
+            marginBottom: 18,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 10,
+            color: "#991b1b",
+            fontSize: 13,
+            lineHeight: "1.4"
+          }}>
+            <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 1 }} />
+            <span>
+              {error.includes("An account with this email already exists") ? (
+                <>
+                  An account with this email already exists.{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onNavigateLogin) onNavigateLogin();
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#1e40af",
+                      fontWeight: 600,
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      padding: 0,
+                      fontSize: "inherit"
+                    }}
+                  >
+                    Sign in
+                  </button>
+                  {", or "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.hash = "#forgot-password";
+                      if (onNavigateForgotPassword) {
+                        onNavigateForgotPassword(email.trim());
+                      } else if (onNavigateLogin) {
+                        onNavigateLogin();
+                      }
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#1e40af",
+                      fontWeight: 600,
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      padding: 0,
+                      fontSize: "inherit"
+                    }}
+                  >
+                    reset your password
+                  </button>
+                  .
+                </>
+              ) : (
+                error
+              )}
+            </span>
+          </div>
+        )}
+
+        {/* Info/Resend Toast */}
+        {resendStatus && (
+          <div style={{
+            background: "#eff6ff",
+            border: "1px solid #bfdbfe",
+            borderRadius: 8,
+            padding: "10px 14px",
+            marginBottom: 16,
+            color: "#1e40af",
+            fontSize: 13,
+            display: "flex",
+            alignItems: "center",
+            gap: 8
+          }}>
+            <CheckCircle2 size={16} />
+            <span>{resendStatus}</span>
+          </div>
+        )}
+
+        {/* STEP 2: Email Verification Code Entry */}
+        {awaitingVerification ? (
+          <form onSubmit={handleVerifyCode}>
+            {devCode && (
+              <div style={{
+                background: "#eff6ff",
+                border: "1px solid #bfdbfe",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginBottom: 16,
+                fontSize: 13,
+                color: "#1e3a8a",
+                lineHeight: 1.4
+              }}>
+                <div style={{ fontWeight: 600, marginBottom: 2 }}>Testing Mode (SMTP not configured in .env):</div>
+                <div>Your 6-digit verification code is: <strong style={{ letterSpacing: 2, fontSize: 15, color: "#1d4ed8" }}>{devCode}</strong> (Auto-filled below)</div>
+              </div>
+            )}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{
+                display: "block",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#334155",
+                marginBottom: 6
+              }}>
+                6-Digit Verification Code
+              </label>
+              <div style={{ position: "relative" }}>
+                <KeyRound size={18} style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8"
+                }} />
+                <input
+                  id="verification-code-input"
+                  type="text"
+                  maxLength={6}
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Enter 6-digit code"
+                  disabled={verificationLoading}
+                  required
+                  autoFocus
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    padding: "0 12px 0 38px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: 18,
+                    letterSpacing: "4px",
+                    fontWeight: 700,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: "#f8fafc",
+                    color: "#0f172a"
+                  }}
+                />
+              </div>
+              <div style={{ fontSize: 12, color: "#64748b", marginTop: 6 }}>
+                Code expires in 15 minutes (max 5 attempts).
+              </div>
+            </div>
+
+            <button
+              id="verify-code-submit-btn"
+              type="submit"
+              disabled={verificationLoading || verificationCode.length < 6}
+              style={{
+                width: "100%",
+                height: 44,
+                minHeight: 44,
+                background: (verificationLoading || verificationCode.length < 6)
+                  ? "#94a3b8"
+                  : "linear-gradient(135deg, #1e3e62 0%, #0b192c 100%)",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: (verificationLoading || verificationCode.length < 6) ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                boxShadow: "0 4px 12px rgba(11, 25, 44, 0.25)"
+              }}
+            >
+              {verificationLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" style={{ animation: "spin 1s linear infinite" }} />
+                  <span>Verifying code...</span>
+                </>
+              ) : (
+                <span>Verify & Sign In</span>
+              )}
+            </button>
+
+            <div style={{
+              marginTop: 18,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: 13
+            }}>
+              <button
+                type="button"
+                onClick={handleResendCode}
+                disabled={resendCooldown > 0}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: resendCooldown > 0 ? "#94a3b8" : "#1d4ed8",
+                  cursor: resendCooldown > 0 ? "not-allowed" : "pointer",
+                  fontWeight: 600,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: 0
+                }}
+              >
+                <RefreshCw size={14} />
+                <span>{resendCooldown > 0 ? `Resend Code (${resendCooldown}s)` : "Resend Code"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAwaitingVerification(false);
+                  setError("");
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#64748b",
+                  cursor: "pointer",
+                  padding: 0
+                }}
+              >
+                Change email
+              </button>
+            </div>
+          </form>
+        ) : (
+          /* STEP 1: Registration Form */
+          <form onSubmit={handleSubmit}>
+            {/* Full Name Field */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{
+                display: "block",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#334155",
+                marginBottom: 6
+              }}>
+                Full Name
+              </label>
+              <div style={{ position: "relative" }}>
+                <User size={18} style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8"
+                }} />
+                <input
+                  id="signup-name-input"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. John Doe"
+                  disabled={loading}
+                  required
+                  style={{
+                    width: "100%",
+                    height: 42,
+                    padding: "0 12px 0 38px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: "#f8fafc"
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Email Field */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{
+                display: "block",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#334155",
+                marginBottom: 6
+              }}>
+                Email address
+              </label>
+              <div style={{ position: "relative" }}>
+                <Mail size={18} style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8"
+                }} />
+                <input
+                  id="signup-email-input"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  disabled={loading}
+                  autoComplete="email"
+                  required
+                  style={{
+                    width: "100%",
+                    height: 42,
+                    padding: "0 12px 0 38px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: "#f8fafc"
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{
+                display: "block",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#334155",
+                marginBottom: 6
+              }}>
+                Password
+              </label>
+              <div style={{ position: "relative" }}>
+                <Lock size={18} style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8"
+                }} />
+                <input
+                  id="signup-password-input"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="At least 6 characters"
+                  disabled={loading}
+                  required
+                  style={{
+                    width: "100%",
+                    height: 42,
+                    padding: "0 40px 0 38px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: "#f8fafc"
+                  }}
+                />
+                <button
+                  type="button"
+                  id="toggle-signup-password-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  style={{
+                    position: "absolute",
+                    right: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#94a3b8",
+                    padding: 4,
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
+                Rule: Minimum 6 characters, not your email, not a common password.
+              </div>
+            </div>
+
+            {/* Confirm Password Field */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={{
+                display: "block",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#334155",
+                marginBottom: 6
+              }}>
+                Confirm Password
+              </label>
+              <div style={{ position: "relative" }}>
+                <Lock size={18} style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8"
+                }} />
+                <input
+                  id="signup-confirm-password-input"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter password"
+                  disabled={loading}
+                  required
+                  style={{
+                    width: "100%",
+                    height: 42,
+                    padding: "0 40px 0 38px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: "#f8fafc"
+                  }}
+                />
+                <button
+                  type="button"
+                  id="toggle-signup-confirm-password-btn"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  tabIndex={-1}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  style={{
+                    position: "absolute",
+                    right: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#94a3b8",
+                    padding: 4,
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Terms & Privacy Consent Checkbox */}
+            <div style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 10,
+              marginBottom: 22,
+              padding: "10px 12px",
+              background: "#f8fafc",
+              borderRadius: 8,
+              border: "1px solid #e2e8f0"
+            }}>
+              <input
+                id="signup-consent-checkbox"
+                type="checkbox"
+                checked={consented}
+                onChange={(e) => setConsented(e.target.checked)}
+                required
+                style={{
+                  marginTop: 2,
+                  width: 17,
+                  height: 17,
+                  cursor: "pointer",
+                  accentColor: "#1e3e62"
+                }}
+              />
+              <label htmlFor="signup-consent-checkbox" style={{
+                fontSize: 13,
+                color: "#334155",
+                lineHeight: 1.45,
+                cursor: "pointer",
+                userSelect: "none"
+              }}>
+                I agree to the{" "}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowTermsModal(true);
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    color: "#1d4ed8",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    fontSize: 13
+                  }}
+                >
+                  Terms of Use
+                </button>
+                {" "}and{" "}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPrivacyModal(true);
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    color: "#1d4ed8",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    fontSize: 13
+                  }}
+                >
+                  Privacy Policy
+                </button>
+              </label>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              id="signup-submit-btn"
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                height: 44,
+                minHeight: 44,
+                background: loading ? "#94a3b8" : "linear-gradient(135deg, #1e3e62 0%, #0b192c 100%)",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: loading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                transition: "0.2s ease",
+                boxShadow: "0 4px 12px rgba(11, 25, 44, 0.25)"
+              }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" style={{ animation: "spin 1s linear infinite" }} />
+                  <span>Creating account...</span>
+                </>
+              ) : (
+                <span>Create account</span>
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* Back to Sign In Link */}
+        <div style={{
+          marginTop: 22,
+          paddingTop: 16,
+          borderTop: "1px solid #e2e8f0",
+          textAlign: "center",
+          fontSize: 13,
+          color: "#475569"
+        }}>
+          Already have an account?{" "}
+          <button
+            id="back-to-signin-btn"
+            type="button"
+            onClick={onNavigateLogin}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#1d4ed8",
+              fontWeight: 600,
+              cursor: "pointer",
+              textDecoration: "underline",
+              padding: 0,
+              fontSize: 13
+            }}
+          >
+            Back to sign in
+          </button>
+        </div>
+      </div>
+      </div>
+    </div>
+  );
+}

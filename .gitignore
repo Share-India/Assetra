@@ -1,0 +1,74 @@
+# ==============================================================================
+# Git Ignore Rules for FAR Replacement Value Calculator
+# ==============================================================================
+
+# Environment files and secrets
+.env
+*.env
+.env.*
+*.env.*
+**/.env
+**/.env.*
+backend/.env
+frontend/.env
+!.env.example
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+venv2/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Caches
+*_cache.json
+.cache/
+.pytest_cache/
+
+# Node & Frontend
+node_modules/
+frontend/dist/
+frontend/node_modules/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+*.log
+logs/
+app.log
+
+# Archive and test data/samples
+_archive/
+tests/data/
+tests/test_files/
+tests/sample_files/
+
+# Temporary Excel/Upload artifacts
+temp_*
+*.tmp
+*.zip
+backend/downloads/
+backend/temp_*
+backend/jobs/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

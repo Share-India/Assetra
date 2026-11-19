@@ -1,0 +1,12 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv
+venv2
+.env
+logs
+downloads
+.git
+.vscode
+tests
