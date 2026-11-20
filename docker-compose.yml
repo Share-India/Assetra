@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -53,11 +51,11 @@ services:
       - ADMIN_EMAIL=${ADMIN_EMAIL:-communication.ins@shareindia.co.in}
       - REQUIRE_ADMIN_APPROVAL=${REQUIRE_ADMIN_APPROVAL:-false}
       - REQUIRE_EMAIL_VERIFICATION=${REQUIRE_EMAIL_VERIFICATION:-false}
-      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_HOST=${SMTP_HOST:-}
       - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - MAIL_FROM=${MAIL_FROM}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - MAIL_FROM=${MAIL_FROM:-}
       - MAIL_SENDER_NAME=${MAIL_SENDER_NAME:-Share India Insurance}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:
@@ -75,7 +73,7 @@ services:
     container_name: assetra-frontend
     restart: unless-stopped
     ports:
-      - "${ASSETRA_PORT:-8080}:80"
+      - "127.0.0.1:${ASSETRA_PORT:-8095}:80"
     depends_on:
       - backend
     networks:
