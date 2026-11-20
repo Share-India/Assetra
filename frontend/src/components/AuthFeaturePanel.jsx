@@ -6,22 +6,22 @@ export default function AuthFeaturePanel() {
     {
       icon: TrendingUp,
       title: "Official WPI Time Series (1954–2025)",
-      desc: "Multi-stage inflation index linking across 6 official economic base periods for accurate current replacement cost."
+      desc: "Multi-stage inflation index linking across 6 official economic base periods for accurate replacement cost."
     },
     {
       icon: Layers,
       title: "Automated Category & Column Detection",
-      desc: "Smart header mapping detects descriptions, purchase years, and category hierarchies from any company FAR Excel file."
+      desc: "Smart header mapping detects descriptions, purchase years, and category hierarchies from any company FAR file."
     },
     {
       icon: ShieldCheck,
       title: "100% Deterministic & Audit-Proof",
-      desc: "Pure rule-based mathematical valuation conforming strictly to institutional insurance adequacy standards without black-box AI."
+      desc: "Pure rule-based mathematical valuation conforming strictly to institutional insurance adequacy standards."
     },
     {
       icon: FileSpreadsheet,
       title: "Enterprise Reports & Persistent History",
-      desc: "Instant valuation downloads with saved user analyses, full audit logging, and company-wide asset intelligence."
+      desc: "Instant valuation downloads with saved analyses, full audit logging, and company-wide asset intelligence."
     }
   ];
 
@@ -29,74 +29,75 @@ export default function AuthFeaturePanel() {
     <div
       className="auth-feature-panel"
       style={{
-        flex: "1 1 52%",
+        flex: "1 1 50%",
         background: "linear-gradient(160deg, #091326 0%, #0f244a 45%, #173b75 100%)",
-        padding: "44px 40px",
+        padding: "26px 28px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         color: "#ffffff",
         position: "relative",
         overflow: "hidden",
-        borderRight: "1px solid rgba(255, 255, 255, 0.08)"
+        borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+        boxSizing: "border-box"
       }}
     >
       {/* Decorative background glow circles */}
       <div
         style={{
           position: "absolute",
-          top: -80,
-          left: -80,
-          width: 260,
-          height: 260,
+          top: -60,
+          left: -60,
+          width: 220,
+          height: 220,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, transparent 70%)",
           pointerEvents: "none"
         }}
       />
       <div
         style={{
           position: "absolute",
-          bottom: -100,
-          right: -80,
-          width: 320,
-          height: 320,
+          bottom: -80,
+          right: -60,
+          width: 260,
+          height: 260,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, transparent 70%)",
           pointerEvents: "none"
         }}
       />
 
       <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Company Header with Share India Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 32, flexWrap: "wrap" }}>
+        {/* Company Header with Official Share India Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
           <div
             style={{
               background: "#ffffff",
-              padding: "7px 14px",
-              borderRadius: 10,
+              padding: "4px 8px",
+              borderRadius: 8,
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)",
-              border: "1px solid rgba(255, 255, 255, 0.8)"
+              boxShadow: "0 3px 12px rgba(0, 0, 0, 0.22)",
+              border: "1px solid rgba(255, 255, 255, 0.9)"
             }}
           >
             <img
               src="/share_india_logo.png"
-              alt="Share India"
+              alt="Share India - You generate, we multiply"
               style={{
-                height: 30,
+                height: 42,
                 width: "auto",
                 objectFit: "contain",
                 display: "block"
               }}
             />
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.15 }}>
             <span
               style={{
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: 700,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
@@ -105,60 +106,60 @@ export default function AuthFeaturePanel() {
             >
               Enterprise Platform
             </span>
-            <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>
+            <span style={{ fontSize: 12.5, color: "#cbd5e1", fontWeight: 600 }}>
               Share India Insurance Brokers
             </span>
           </div>
         </div>
 
         {/* Hero Section */}
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 16 }}>
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 6,
+              gap: 5,
               background: "rgba(37, 99, 235, 0.18)",
               border: "1px solid rgba(96, 165, 250, 0.3)",
-              padding: "4px 10px",
-              borderRadius: 20,
-              fontSize: 11,
+              padding: "2px 8px",
+              borderRadius: 16,
+              fontSize: 10.5,
               fontWeight: 600,
               color: "#93c5fd",
-              marginBottom: 14,
+              marginBottom: 8,
               letterSpacing: "0.02em"
             }}
           >
-            <Building2 size={13} color="#60a5fa" />
+            <Building2 size={12} color="#60a5fa" />
             <span>Fixed Asset Register Replacement Valuation</span>
           </div>
 
           <h2
             style={{
-              fontSize: 26,
+              fontSize: 20,
               fontWeight: 800,
               lineHeight: 1.25,
               color: "#ffffff",
-              margin: "0 0 12px 0",
-              letterSpacing: "-0.025em"
+              margin: "0 0 6px 0",
+              letterSpacing: "-0.02em"
             }}
           >
             Accurate Asset Valuation. Built for Adequate Coverage.
           </h2>
           <p
             style={{
-              fontSize: 13.5,
-              color: "#cbd5e1",
-              lineHeight: 1.55,
+              fontSize: 12,
+              color: "#94a3b8",
+              lineHeight: 1.45,
               margin: 0
             }}
           >
-            Estimate current replacement values for insurance adequacy using official Wholesale Price Index data from 1954 to 2025 across all major asset categories.
+            Estimate current replacement values for insurance adequacy using official Wholesale Price Index data (1954–2025).
           </p>
         </div>
 
-        {/* Feature Cards Grid */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {/* Compact Feature Cards Grid */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {features.map((feat, idx) => {
             const IconComponent = feat.icon;
             return (
@@ -167,19 +168,19 @@ export default function AuthFeaturePanel() {
                 style={{
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: 12,
+                  gap: 10,
                   background: "rgba(255, 255, 255, 0.04)",
                   border: "1px solid rgba(255, 255, 255, 0.07)",
-                  padding: "12px 14px",
-                  borderRadius: 10,
+                  padding: "7px 10px",
+                  borderRadius: 8,
                   backdropFilter: "blur(4px)"
                 }}
               >
                 <div
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
+                    width: 26,
+                    height: 26,
+                    borderRadius: 6,
                     background: "rgba(37, 99, 235, 0.25)",
                     display: "flex",
                     alignItems: "center",
@@ -189,24 +190,25 @@ export default function AuthFeaturePanel() {
                     border: "1px solid rgba(96, 165, 250, 0.3)"
                   }}
                 >
-                  <IconComponent size={16} color="#60a5fa" />
+                  <IconComponent size={14} color="#60a5fa" />
                 </div>
                 <div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: 700,
                       color: "#f8fafc",
-                      marginBottom: 2
+                      lineHeight: 1.2,
+                      marginBottom: 1
                     }}
                   >
                     {feat.title}
                   </div>
                   <div
                     style={{
-                      fontSize: 11.5,
+                      fontSize: 11,
                       color: "#94a3b8",
-                      lineHeight: 1.45
+                      lineHeight: 1.35
                     }}
                   >
                     {feat.desc}
@@ -221,22 +223,22 @@ export default function AuthFeaturePanel() {
       {/* Trust Footer */}
       <div
         style={{
-          marginTop: 32,
-          paddingTop: 18,
+          marginTop: 14,
+          paddingTop: 10,
           borderTop: "1px solid rgba(255, 255, 255, 0.1)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 10,
-          fontSize: 11.5,
+          gap: 6,
+          fontSize: 10.5,
           color: "#94a3b8",
           position: "relative",
           zIndex: 1
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <CheckCircle2 size={13} color="#34d399" />
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <CheckCircle2 size={12} color="#34d399" />
           <span>Institutional Grade Reliability</span>
         </div>
         <div style={{ color: "#64748b" }}>

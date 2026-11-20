@@ -8,11 +8,11 @@ echo.
 
 :: 1. Start Backend in a new window with exactly 1 worker
 echo [STARTUP] Starting FastAPI backend with 1 worker...
-start "FAR Backend Server (1 Worker)" cmd /c "cd /d %~dp0..\backend && .\venv2\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000 --workers 1"
+start "FAR Backend Server (1 Worker)" cmd /c "cd /d %~dp0..\backend && .\venv2\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8001 --workers 1"
 
 :: 2. Wait for Backend Health
-echo [STARTUP] Waiting for backend to become healthy on port 8000...
-set "HEALTH_URL=http://127.0.0.1:8000/health"
+echo [STARTUP] Waiting for backend to become healthy on port 8001...
+set "HEALTH_URL=http://127.0.0.1:8001/health"
 set "MAX_RETRIES=20"
 set "RETRY_COUNT=0"
 
@@ -43,7 +43,7 @@ echo.
 echo ==================================================
 echo SUCCESS: FAR Calculator started!
 echo Frontend: http://localhost:3000
-echo Backend:  http://127.0.0.1:8000
+echo Backend:  http://127.0.0.1:8001
 echo ==================================================
 echo.
 pause

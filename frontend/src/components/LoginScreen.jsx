@@ -193,28 +193,27 @@ export default function LoginScreen({
   };
 
   return (
-    <div style={{
-      minHeight: "100dvh",
-      width: "100%",
+    <div className="far-auth-page-container" style={{
+      height: "100vh",
+      maxHeight: "100vh",
+      width: "100vw",
       background: "radial-gradient(ellipse at 50% 20%, #173b75 0%, #0b192c 60%, #030712 100%)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      padding: "24px 16px",
-      paddingTop: "max(24px, env(safe-area-inset-top, 0px))",
-      paddingBottom: "max(24px, env(safe-area-inset-bottom, 0px))",
+      padding: "16px",
       fontFamily: "'Inter', sans-serif",
       boxSizing: "border-box",
-      overflowY: "auto"
+      overflow: "hidden"
     }}>
       <style>{`
         .far-auth-split-wrapper {
           width: 100%;
-          max-width: 1080px;
-          min-height: 620px;
+          max-width: 960px;
+          max-height: calc(100vh - 32px);
           background: #ffffff;
-          border-radius: 20px;
-          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
           display: flex;
           flex-direction: row;
           overflow: hidden;
@@ -222,49 +221,55 @@ export default function LoginScreen({
           box-sizing: border-box;
         }
         .far-auth-form-column {
-          flex: 1 1 48%;
-          padding: 44px 38px;
+          flex: 1 1 50%;
+          padding: 26px 32px;
           display: flex;
           flex-direction: column;
           justifyContent: center;
           box-sizing: border-box;
           background: #ffffff;
           min-width: 0;
+          overflow-y: auto;
         }
-        @media (max-width: 960px) {
+        @media (max-width: 900px) {
+          .far-auth-page-container {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-y: auto !important;
+          }
           .far-auth-split-wrapper {
             flex-direction: column;
-            max-width: 520px;
-            min-height: auto;
+            max-width: 480px;
+            max-height: none !important;
           }
           .auth-feature-panel {
             border-right: none !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-            padding: 32px 24px !important;
+            padding: 20px 18px !important;
           }
           .far-auth-form-column {
-            padding: 36px 24px !important;
+            padding: 22px 18px !important;
           }
         }
         @media (max-width: 767px) {
           input {
-            font-size: 16px !important;
+            font-size: 15px !important;
           }
         }
         @media (max-width: 480px) {
           .far-auth-split-wrapper {
-            border-radius: 14px;
+            border-radius: 12px;
           }
           .auth-feature-panel {
-            padding: 24px 18px !important;
+            padding: 18px 14px !important;
           }
           .far-auth-form-column {
-            padding: 24px 16px !important;
+            padding: 18px 14px !important;
           }
         }
         input:focus-visible, button:focus-visible {
           outline: 2px solid #2563EB !important;
-          outline-offset: 2px !important;
+          outline-offset: 1px !important;
         }
       `}</style>
 
@@ -275,17 +280,17 @@ export default function LoginScreen({
         {/* Right Side: Assetra Branding & Sign In Form */}
         <div className="far-auth-form-column">
           {/* Assetra Brand Lockup on Right Side Form */}
-          <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
-            <AssetraBrandLockup theme="light" iconSize={48} fontSize={24} taglineSize={13} align="center" />
+          <div style={{ marginBottom: 14, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+            <AssetraBrandLockup theme="light" iconSize={40} fontSize={22} taglineSize={11.5} align="center" />
           </div>
 
           {/* Card Header */}
-          <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{ textAlign: "center", marginBottom: 16 }}>
             <h1 style={{
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: 700,
               color: "#0b192c",
-              margin: "0 0 6px 0",
+              margin: "0 0 3px 0",
               letterSpacing: "-0.02em"
             }}>
               {mode === "login"
@@ -294,7 +299,7 @@ export default function LoginScreen({
                 ? "Forgot Password"
                 : "Reset Your Password"}
             </h1>
-            <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+            <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>
               {mode === "login"
                 ? "Sign in to access Assetra & saved valuation analyses"
                 : mode === "forgot_request"
@@ -310,18 +315,18 @@ export default function LoginScreen({
             style={{
               background: "#ecfdf5",
               border: "1px solid #a7f3d0",
-              borderRadius: 8,
-              padding: "12px 14px",
-              marginBottom: 18,
+              borderRadius: 6,
+              padding: "9px 12px",
+              marginBottom: 12,
               display: "flex",
               alignItems: "flex-start",
-              gap: 10,
+              gap: 8,
               color: "#065f46",
-              fontSize: 13,
-              lineHeight: "1.4"
+              fontSize: 12,
+              lineHeight: "1.35"
             }}
           >
-            <CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: 1 }} />
+            <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: 1 }} />
             <span>{successMsg}</span>
           </div>
         )}
@@ -333,18 +338,18 @@ export default function LoginScreen({
             style={{
               background: "#fef2f2",
               border: "1px solid #fecaca",
-              borderRadius: 8,
-              padding: "12px 14px",
-              marginBottom: 18,
+              borderRadius: 6,
+              padding: "9px 12px",
+              marginBottom: 12,
               display: "flex",
               alignItems: "flex-start",
-              gap: 10,
+              gap: 8,
               color: "#991b1b",
-              fontSize: 13,
-              lineHeight: "1.4"
+              fontSize: 12,
+              lineHeight: "1.35"
             }}
           >
-            <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 1 }} />
+            <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 1 }} />
             <span>{error || sessionExpiredMessage}</span>
           </div>
         )}
@@ -354,20 +359,20 @@ export default function LoginScreen({
             {/* Login Form */}
             <form onSubmit={handleSubmit}>
               {/* Email Field */}
-              <div style={{ marginBottom: 16 }}>
+              <div style={{ marginBottom: 11 }}>
                 <label style={{
                   display: "block",
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: 600,
                   color: "#334155",
-                  marginBottom: 6
+                  marginBottom: 4
                 }}>
                   Email address
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Mail size={18} style={{
+                  <Mail size={16} style={{
                     position: "absolute",
-                    left: 12,
+                    left: 11,
                     top: "50%",
                     transform: "translateY(-50%)",
                     color: "#94a3b8"
@@ -383,11 +388,11 @@ export default function LoginScreen({
                     required
                     style={{
                       width: "100%",
-                      height: 44,
-                      padding: "0 12px 0 38px",
+                      height: 38,
+                      padding: "0 10px 0 34px",
                       border: "1px solid #cbd5e1",
-                      borderRadius: 8,
-                      fontSize: 14,
+                      borderRadius: 7,
+                      fontSize: 13,
                       outline: "none",
                       boxSizing: "border-box",
                       background: "#f8fafc"
@@ -397,10 +402,10 @@ export default function LoginScreen({
               </div>
 
               {/* Password Field */}
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <div style={{ marginBottom: 11 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                   <label style={{
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: 600,
                     color: "#334155"
                   }}>
@@ -419,7 +424,7 @@ export default function LoginScreen({
                       background: "none",
                       border: "none",
                       color: "#2563eb",
-                      fontSize: 12,
+                      fontSize: 11.5,
                       fontWeight: 600,
                       cursor: "pointer",
                       padding: 0
@@ -429,9 +434,9 @@ export default function LoginScreen({
                   </button>
                 </div>
                 <div style={{ position: "relative" }}>
-                  <Lock size={18} style={{
+                  <Lock size={16} style={{
                     position: "absolute",
-                    left: 12,
+                    left: 11,
                     top: "50%",
                     transform: "translateY(-50%)",
                     color: "#94a3b8"
@@ -447,11 +452,11 @@ export default function LoginScreen({
                     required
                     style={{
                       width: "100%",
-                      height: 44,
-                      padding: "0 40px 0 38px",
+                      height: 38,
+                      padding: "0 36px 0 34px",
                       border: "1px solid #cbd5e1",
-                      borderRadius: 8,
-                      fontSize: 14,
+                      borderRadius: 7,
+                      fontSize: 13,
                       outline: "none",
                       boxSizing: "border-box",
                       background: "#f8fafc"
@@ -465,32 +470,32 @@ export default function LoginScreen({
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     style={{
                       position: "absolute",
-                      right: 12,
+                      right: 10,
                       top: "50%",
                       transform: "translateY(-50%)",
                       background: "transparent",
                       border: "none",
                       cursor: "pointer",
                       color: "#94a3b8",
-                      padding: 4,
+                      padding: 2,
                       display: "flex",
                       alignItems: "center"
                     }}
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
 
-              {/* Keep me signed in Checkbox (unchecked by default) */}
-              <div style={{ marginBottom: 18, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              {/* Keep me signed in Checkbox */}
+              <div style={{ marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <label
                   htmlFor="remember-me-checkbox"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: 8,
-                    fontSize: 13,
+                    gap: 7,
+                    fontSize: 12,
                     fontWeight: 500,
                     color: "#334155",
                     cursor: loading ? "not-allowed" : "pointer",
@@ -504,8 +509,8 @@ export default function LoginScreen({
                     onChange={(e) => setRememberMe(e.target.checked)}
                     disabled={loading}
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: 15,
+                      height: 15,
                       accentColor: "#1e3e62",
                       cursor: loading ? "not-allowed" : "pointer",
                       margin: 0
@@ -522,13 +527,13 @@ export default function LoginScreen({
                 disabled={loading}
                 style={{
                   width: "100%",
-                  height: 44,
-                  minHeight: 44,
+                  height: 38,
+                  minHeight: 38,
                   background: loading ? "#94a3b8" : "linear-gradient(135deg, #1e3e62 0%, #0b192c 100%)",
                   color: "#ffffff",
                   border: "none",
-                  borderRadius: 8,
-                  fontSize: 14,
+                  borderRadius: 7,
+                  fontSize: 13.5,
                   fontWeight: 600,
                   cursor: loading ? "not-allowed" : "pointer",
                   display: "flex",
@@ -536,12 +541,12 @@ export default function LoginScreen({
                   justifyContent: "center",
                   gap: 8,
                   transition: "0.2s ease",
-                  boxShadow: "0 4px 12px rgba(11, 25, 44, 0.25)"
+                  boxShadow: "0 3px 10px rgba(11, 25, 44, 0.2)"
                 }}
               >
                 {loading ? (
                   <>
-                    <Loader2 size={18} className="animate-spin" style={{ animation: "spin 1s linear infinite" }} />
+                    <Loader2 size={16} className="animate-spin" style={{ animation: "spin 1s linear infinite" }} />
                     <span>Signing in...</span>
                   </>
                 ) : (
@@ -552,11 +557,11 @@ export default function LoginScreen({
 
             {/* Account Creation Link */}
             <div style={{
-              marginTop: 22,
-              paddingTop: 18,
+              marginTop: 14,
+              paddingTop: 11,
               borderTop: "1px solid #e2e8f0",
               textAlign: "center",
-              fontSize: 13,
+              fontSize: 12.5,
               color: "#475569"
             }}>
               Don't have an account?{" "}
@@ -572,7 +577,7 @@ export default function LoginScreen({
                   cursor: "pointer",
                   textDecoration: "underline",
                   padding: 0,
-                  fontSize: 13
+                  fontSize: 12.5
                 }}
               >
                 Create account

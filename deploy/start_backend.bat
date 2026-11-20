@@ -8,6 +8,6 @@ if not exist ".\venv2\Scripts\python.exe" (
     pause
     exit /b 1
 )
-echo [BACKEND] Running uvicorn with 1 worker on port 8000...
-.\venv2\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000 --workers 1
+echo [BACKEND] Running uvicorn with 1 worker on port 8001...
+.\venv2\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8001 --workers 1
 pause

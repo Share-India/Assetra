@@ -180,28 +180,27 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
   };
 
   return (
-    <div style={{
-      minHeight: "100dvh",
-      width: "100%",
+    <div className="far-auth-page-container" style={{
+      height: "100vh",
+      maxHeight: "100vh",
+      width: "100vw",
       background: "radial-gradient(ellipse at 50% 20%, #173b75 0%, #0b192c 60%, #030712 100%)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      padding: "24px 16px",
-      paddingTop: "max(24px, env(safe-area-inset-top, 0px))",
-      paddingBottom: "max(24px, env(safe-area-inset-bottom, 0px))",
+      padding: "16px",
       fontFamily: "'Inter', sans-serif",
       boxSizing: "border-box",
-      overflowY: "auto"
+      overflow: "hidden"
     }}>
       <style>{`
         .far-auth-split-wrapper {
           width: 100%;
-          max-width: 1080px;
-          min-height: 620px;
+          max-width: 960px;
+          max-height: calc(100vh - 32px);
           background: #ffffff;
-          border-radius: 20px;
-          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
           display: flex;
           flex-direction: row;
           overflow: hidden;
@@ -209,49 +208,55 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
           box-sizing: border-box;
         }
         .far-auth-form-column {
-          flex: 1 1 48%;
-          padding: 40px 36px;
+          flex: 1 1 50%;
+          padding: 22px 30px;
           display: flex;
           flex-direction: column;
           justifyContent: center;
           box-sizing: border-box;
           background: #ffffff;
           min-width: 0;
+          overflow-y: auto;
         }
-        @media (max-width: 960px) {
+        @media (max-width: 900px) {
+          .far-auth-page-container {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-y: auto !important;
+          }
           .far-auth-split-wrapper {
             flex-direction: column;
-            max-width: 520px;
-            min-height: auto;
+            max-width: 480px;
+            max-height: none !important;
           }
           .auth-feature-panel {
             border-right: none !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-            padding: 32px 24px !important;
+            padding: 20px 18px !important;
           }
           .far-auth-form-column {
-            padding: 36px 24px !important;
+            padding: 22px 18px !important;
           }
         }
         @media (max-width: 767px) {
           input {
-            font-size: 16px !important;
+            font-size: 15px !important;
           }
         }
         @media (max-width: 480px) {
           .far-auth-split-wrapper {
-            border-radius: 14px;
+            border-radius: 12px;
           }
           .auth-feature-panel {
-            padding: 24px 18px !important;
+            padding: 18px 14px !important;
           }
           .far-auth-form-column {
-            padding: 24px 16px !important;
+            padding: 18px 14px !important;
           }
         }
         input:focus-visible, button:focus-visible {
           outline: 2px solid #2563EB !important;
-          outline-offset: 2px !important;
+          outline-offset: 1px !important;
         }
       `}</style>
 
@@ -266,22 +271,22 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
         {/* Right Side: Assetra Branding & Sign Up Form */}
         <div className="far-auth-form-column">
           {/* Assetra Brand Lockup on Right Side Form */}
-          <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
-            <AssetraBrandLockup theme="light" iconSize={48} fontSize={24} taglineSize={13} align="center" />
+          <div style={{ marginBottom: 12, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+            <AssetraBrandLockup theme="light" iconSize={38} fontSize={21} taglineSize={11.5} align="center" />
           </div>
 
           {/* Card Header */}
-          <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{ textAlign: "center", marginBottom: 14 }}>
             <h1 style={{
-              fontSize: 22,
+              fontSize: 19,
               fontWeight: 700,
               color: "#0b192c",
-              margin: "0 0 6px 0",
+              margin: "0 0 3px 0",
               letterSpacing: "-0.02em"
             }}>
               {awaitingVerification ? "Verify Your Email" : "Create Your Account"}
             </h1>
-            <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+            <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>
               {awaitingVerification
                 ? `We sent a 6-digit code to ${email}`
                 : "Create an account for Assetra"}
@@ -528,20 +533,20 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
           /* STEP 1: Registration Form */
           <form onSubmit={handleSubmit}>
             {/* Full Name Field */}
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8 }}>
               <label style={{
                 display: "block",
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 600,
                 color: "#334155",
-                marginBottom: 6
+                marginBottom: 3
               }}>
                 Full Name
               </label>
               <div style={{ position: "relative" }}>
-                <User size={18} style={{
+                <User size={16} style={{
                   position: "absolute",
-                  left: 12,
+                  left: 11,
                   top: "50%",
                   transform: "translateY(-50%)",
                   color: "#94a3b8"
@@ -556,11 +561,11 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                   required
                   style={{
                     width: "100%",
-                    height: 42,
-                    padding: "0 12px 0 38px",
+                    height: 36,
+                    padding: "0 10px 0 34px",
                     border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: 14,
+                    borderRadius: 7,
+                    fontSize: 13,
                     outline: "none",
                     boxSizing: "border-box",
                     background: "#f8fafc"
@@ -570,20 +575,20 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
             </div>
 
             {/* Email Field */}
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8 }}>
               <label style={{
                 display: "block",
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 600,
                 color: "#334155",
-                marginBottom: 6
+                marginBottom: 3
               }}>
                 Email address
               </label>
               <div style={{ position: "relative" }}>
-                <Mail size={18} style={{
+                <Mail size={16} style={{
                   position: "absolute",
-                  left: 12,
+                  left: 11,
                   top: "50%",
                   transform: "translateY(-50%)",
                   color: "#94a3b8"
@@ -599,11 +604,11 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                   required
                   style={{
                     width: "100%",
-                    height: 42,
-                    padding: "0 12px 0 38px",
+                    height: 36,
+                    padding: "0 10px 0 34px",
                     border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: 14,
+                    borderRadius: 7,
+                    fontSize: 13,
                     outline: "none",
                     boxSizing: "border-box",
                     background: "#f8fafc"
@@ -613,20 +618,20 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
             </div>
 
             {/* Password Field */}
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8 }}>
               <label style={{
                 display: "block",
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 600,
                 color: "#334155",
-                marginBottom: 6
+                marginBottom: 3
               }}>
                 Password
               </label>
               <div style={{ position: "relative" }}>
-                <Lock size={18} style={{
+                <Lock size={16} style={{
                   position: "absolute",
-                  left: 12,
+                  left: 11,
                   top: "50%",
                   transform: "translateY(-50%)",
                   color: "#94a3b8"
@@ -641,11 +646,11 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                   required
                   style={{
                     width: "100%",
-                    height: 42,
-                    padding: "0 40px 0 38px",
+                    height: 36,
+                    padding: "0 36px 0 34px",
                     border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: 14,
+                    borderRadius: 7,
+                    fontSize: 13,
                     outline: "none",
                     boxSizing: "border-box",
                     background: "#f8fafc"
@@ -659,41 +664,38 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   style={{
                     position: "absolute",
-                    right: 12,
+                    right: 10,
                     top: "50%",
                     transform: "translateY(-50%)",
                     background: "transparent",
                     border: "none",
                     cursor: "pointer",
                     color: "#94a3b8",
-                    padding: 4,
+                    padding: 2,
                     display: "flex",
                     alignItems: "center"
                   }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
-              </div>
-              <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
-                Rule: Minimum 6 characters, not your email, not a common password.
               </div>
             </div>
 
             {/* Confirm Password Field */}
-            <div style={{ marginBottom: 18 }}>
+            <div style={{ marginBottom: 10 }}>
               <label style={{
                 display: "block",
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 600,
                 color: "#334155",
-                marginBottom: 6
+                marginBottom: 3
               }}>
                 Confirm Password
               </label>
               <div style={{ position: "relative" }}>
-                <Lock size={18} style={{
+                <Lock size={16} style={{
                   position: "absolute",
-                  left: 12,
+                  left: 11,
                   top: "50%",
                   transform: "translateY(-50%)",
                   color: "#94a3b8"
@@ -708,11 +710,11 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                   required
                   style={{
                     width: "100%",
-                    height: 42,
-                    padding: "0 40px 0 38px",
+                    height: 36,
+                    padding: "0 36px 0 34px",
                     border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: 14,
+                    borderRadius: 7,
+                    fontSize: 13,
                     outline: "none",
                     boxSizing: "border-box",
                     background: "#f8fafc"
@@ -726,19 +728,19 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   style={{
                     position: "absolute",
-                    right: 12,
+                    right: 10,
                     top: "50%",
                     transform: "translateY(-50%)",
                     background: "transparent",
                     border: "none",
                     cursor: "pointer",
                     color: "#94a3b8",
-                    padding: 4,
+                    padding: 2,
                     display: "flex",
                     alignItems: "center"
                   }}
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
@@ -746,12 +748,12 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
             {/* Terms & Privacy Consent Checkbox */}
             <div style={{
               display: "flex",
-              alignItems: "flex-start",
-              gap: 10,
-              marginBottom: 22,
-              padding: "10px 12px",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 12,
+              padding: "6px 10px",
               background: "#f8fafc",
-              borderRadius: 8,
+              borderRadius: 6,
               border: "1px solid #e2e8f0"
             }}>
               <input
@@ -761,17 +763,17 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                 onChange={(e) => setConsented(e.target.checked)}
                 required
                 style={{
-                  marginTop: 2,
-                  width: 17,
-                  height: 17,
+                  width: 15,
+                  height: 15,
                   cursor: "pointer",
-                  accentColor: "#1e3e62"
+                  accentColor: "#1e3e62",
+                  margin: 0
                 }}
               />
               <label htmlFor="signup-consent-checkbox" style={{
-                fontSize: 13,
+                fontSize: 11.5,
                 color: "#334155",
-                lineHeight: 1.45,
+                lineHeight: 1.35,
                 cursor: "pointer",
                 userSelect: "none"
               }}>
@@ -790,10 +792,10 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                     fontWeight: 600,
                     cursor: "pointer",
                     textDecoration: "underline",
-                    fontSize: 13
+                    fontSize: 11.5
                   }}
                 >
-                  Terms of Use
+                  Terms
                 </button>
                 {" "}and{" "}
                 <button
@@ -810,7 +812,7 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                     fontWeight: 600,
                     cursor: "pointer",
                     textDecoration: "underline",
-                    fontSize: 13
+                    fontSize: 11.5
                   }}
                 >
                   Privacy Policy
@@ -825,13 +827,13 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
               disabled={loading}
               style={{
                 width: "100%",
-                height: 44,
-                minHeight: 44,
+                height: 38,
+                minHeight: 38,
                 background: loading ? "#94a3b8" : "linear-gradient(135deg, #1e3e62 0%, #0b192c 100%)",
                 color: "#ffffff",
                 border: "none",
-                borderRadius: 8,
-                fontSize: 14,
+                borderRadius: 7,
+                fontSize: 13.5,
                 fontWeight: 600,
                 cursor: loading ? "not-allowed" : "pointer",
                 display: "flex",
@@ -839,12 +841,12 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
                 justifyContent: "center",
                 gap: 8,
                 transition: "0.2s ease",
-                boxShadow: "0 4px 12px rgba(11, 25, 44, 0.25)"
+                boxShadow: "0 3px 10px rgba(11, 25, 44, 0.2)"
               }}
             >
               {loading ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" style={{ animation: "spin 1s linear infinite" }} />
+                  <Loader2 size={16} className="animate-spin" style={{ animation: "spin 1s linear infinite" }} />
                   <span>Creating account...</span>
                 </>
               ) : (
@@ -856,11 +858,11 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
 
         {/* Back to Sign In Link */}
         <div style={{
-          marginTop: 22,
-          paddingTop: 16,
+          marginTop: 12,
+          paddingTop: 10,
           borderTop: "1px solid #e2e8f0",
           textAlign: "center",
-          fontSize: 13,
+          fontSize: 12.5,
           color: "#475569"
         }}>
           Already have an account?{" "}
