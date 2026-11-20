@@ -92,6 +92,16 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
         throw new Error(data.detail || "Sign-up failed. Please check your information.");
       }
 
+      // If email verification is not required, log the user in immediately
+      if (data.status === "active" || data.requires_verification === false) {
+        if (data.token && onLoginSuccess) {
+          onLoginSuccess(data.token, data.user);
+        } else {
+          onNavigateLogin && onNavigateLogin();
+        }
+        return;
+      }
+
       if (data.status === "unverified_resend") {
         setResendStatus(data.message || "An unverified account with this email already exists. A new verification code has been sent.");
       }

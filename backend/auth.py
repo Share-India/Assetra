@@ -101,12 +101,23 @@ def get_password_min_length() -> int:
 def get_allowed_email_domains() -> List[str]:
     """Parse ALLOWED_EMAIL_DOMAINS from environment."""
     raw = os.getenv("ALLOWED_EMAIL_DOMAINS", "").strip()
-    if not raw:
+    if not raw or raw == "*" or raw.lower() == "all":
         return []
-    return [d.strip().lower() for d in raw.split(",") if d.strip()]
+    domains = [d.strip().lower() for d in raw.split(",") if d.strip()]
+    if "*" in domains or "all" in domains:
+        return []
+    return domains
 
 def is_domain_allowed(email: str) -> bool:
-    """Check if the email domain matches ALLOWED_EMAIL_DOMAINS if configured."""
+    """
+    Check if the email domain matches ALLOWED_EMAIL_DOMAINS.
+    Domain restriction is disabled by default; set ENFORCE_DOMAIN_RESTRICTION=true to enforce.
+    """
+    enforce = os.getenv("ENFORCE_DOMAIN_RESTRICTION", "false").strip().lower()
+    if enforce not in ("true", "1", "yes"):
+        # Domain restriction is not enabled; allow any valid email
+        return True
+
     domains = get_allowed_email_domains()
     if not domains:
         return True

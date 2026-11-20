@@ -66,7 +66,7 @@ class ChangePasswordRequest(BaseModel):
 @router.get("/config")
 def get_auth_config():
     google_client_id = os.getenv("GOOGLE_CLIENT_ID", "").strip()
-    email_verif = os.getenv("REQUIRE_EMAIL_VERIFICATION", "true").strip().lower() not in ("false", "0", "no")
+    email_verif = os.getenv("REQUIRE_EMAIL_VERIFICATION", "false").strip().lower() in ("true", "1", "yes")
     return {
         "google_configured": bool(google_client_id),
         "google_client_id": google_client_id,
@@ -148,7 +148,34 @@ def signup(req: SignUpRequest, request: Request, db: Session = Depends(get_db)):
                 detail="An account with this email already exists. Sign in, or reset your password."
             )
 
-        # Case C: Unverified account exists -> Resend code with 60-second cooldown
+        # Case C: Unverified account exists
+        require_verif = os.getenv("REQUIRE_EMAIL_VERIFICATION", "false").strip().lower() in ("true", "1", "yes")
+        if not require_verif:
+            existing_user.name = req.name.strip()
+            existing_user.password_hash = auth.hash_password(req.password)
+            if not existing_user.email_canonical:
+                existing_user.email_canonical = email_canonical
+            existing_user.email_verified = True
+            existing_user.is_active = True
+            existing_user.status = "active"
+            db.commit()
+            db.refresh(existing_user)
+            token_data = auth.create_access_token(
+                data={"sub": str(existing_user.id), "email": existing_user.email, "role": existing_user.role}
+            )
+            return {
+                "status": "active",
+                "requires_verification": False,
+                "token": token_data,
+                "user": {
+                    "id": existing_user.id,
+                    "email": existing_user.email,
+                    "name": existing_user.name,
+                    "role": existing_user.role
+                },
+                "message": "Account created successfully."
+            }
+
         now_utc = datetime.datetime.now(timezone.utc)
         recent_code = (
             db.query(models.EmailVerificationCode)
@@ -190,6 +217,12 @@ def signup(req: SignUpRequest, request: Request, db: Session = Depends(get_db)):
 
         sent = email_service.send_verification_code_email(email_clean, code)
         if not sent:
+            if not os.getenv("SMTP_HOST") or os.getenv("ENV", "development").strip().lower() == "development":
+                return {
+                    "status": "unverified_resend",
+                    "dev_code": code,
+                    "message": f"Verification code generated (SMTP not configured): {code}"
+                }
             auth.record_audit_event(
                 db=db,
                 actor_id=existing_user.id,
@@ -207,6 +240,7 @@ def signup(req: SignUpRequest, request: Request, db: Session = Depends(get_db)):
         }
 
     # 8. Create new user with unique canonical email
+    require_verif = os.getenv("REQUIRE_EMAIL_VERIFICATION", "false").strip().lower() in ("true", "1", "yes")
     now_utc = datetime.datetime.now(timezone.utc)
     name_parts = req.name.strip().split()
     first_name = name_parts[0] if name_parts else req.name.strip()
@@ -220,9 +254,9 @@ def signup(req: SignUpRequest, request: Request, db: Session = Depends(get_db)):
         password_hash=auth.hash_password(req.password),
         role="user",
         auth_provider="password",
-        status="pending_verification",
-        email_verified=False,
-        is_active=False,
+        status="active" if not require_verif else "pending_verification",
+        email_verified=not require_verif,
+        is_active=not require_verif,
         must_change_password=False,
         consented_at=now_utc,
         terms_version="1.0"
@@ -257,7 +291,31 @@ def signup(req: SignUpRequest, request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_user)
 
-    # 9. Generate 6-digit code, store hash, send email
+    # 9. If email verification is disabled, user is immediately active and authenticated!
+    if not require_verif:
+        auth.record_audit_event(
+            db=db,
+            actor_id=None,
+            action="user_signup",
+            target=f"user:{new_user.id}"
+        )
+        token_data = auth.create_access_token(
+            data={"sub": str(new_user.id), "email": new_user.email, "role": new_user.role}
+        )
+        return {
+            "status": "active",
+            "requires_verification": False,
+            "token": token_data,
+            "user": {
+                "id": new_user.id,
+                "email": new_user.email,
+                "name": new_user.name,
+                "role": new_user.role
+            },
+            "message": "Account created successfully! Welcome to Assetra."
+        }
+
+    # 10. Email verification required: generate 6-digit code, store hash, send email
     code = auth.generate_verification_code()
     code_record = models.EmailVerificationCode(
         user_id=new_user.id,
@@ -270,6 +328,12 @@ def signup(req: SignUpRequest, request: Request, db: Session = Depends(get_db)):
 
     sent = email_service.send_verification_code_email(email_clean, code)
     if not sent:
+        if not os.getenv("SMTP_HOST") or os.getenv("ENV", "development").strip().lower() == "development":
+            return {
+                "status": "created",
+                "dev_code": code,
+                "message": f"Verification code generated (SMTP not configured): {code}"
+            }
         auth.record_audit_event(
             db=db,
             actor_id=new_user.id,
