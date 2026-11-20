@@ -5,7 +5,7 @@ import React from "react";
  * Displays the Assetra logo (Assetra.png) on a clean white background.
  * Contained in a rounded square with crisp border definition.
  */
-export function AssetraIcon({ size = 44, style = {} }) {
+export function AssetraIcon({ size = 50, style = {} }) {
   const radius = Math.max(8, Math.round(size * 0.22));
   return (
     <div
@@ -18,16 +18,16 @@ export function AssetraIcon({ size = 44, style = {} }) {
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.08)",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06)",
         overflow: "hidden",
         boxSizing: "border-box",
-        padding: Math.max(3, Math.round(size * 0.08)),
+        padding: 2,
         ...style
       }}
       aria-hidden="true"
     >
       <img
-        src="/Assetra.png?v=3"
+        src="/Assetra.png?v=4"
         alt="Assetra"
         style={{
           width: "100%",
@@ -48,8 +48,8 @@ export function AssetraIcon({ size = 44, style = {} }) {
  */
 export default function AssetraBrandLockup({
   theme = "light", // "light" | "dark"
-  iconSize = 44,
-  fontSize = 20,
+  iconSize = 50,
+  fontSize = 22,
   taglineSize = 12,
   showTagline = true,
   align = "left",

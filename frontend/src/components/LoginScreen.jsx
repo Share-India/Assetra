@@ -280,8 +280,8 @@ export default function LoginScreen({
         {/* Right Side: Assetra Branding & Sign In Form */}
         <div className="far-auth-form-column">
           {/* Assetra Brand Lockup on Right Side Form */}
-          <div style={{ marginBottom: 14, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
-            <AssetraBrandLockup theme="light" iconSize={40} fontSize={22} taglineSize={11.5} align="center" />
+          <div style={{ marginBottom: 12, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+            <AssetraBrandLockup theme="light" iconSize={54} fontSize={24} taglineSize={12.5} align="center" />
           </div>
 
           {/* Card Header */}

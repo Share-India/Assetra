@@ -271,8 +271,8 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
         {/* Right Side: Assetra Branding & Sign Up Form */}
         <div className="far-auth-form-column">
           {/* Assetra Brand Lockup on Right Side Form */}
-          <div style={{ marginBottom: 12, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
-            <AssetraBrandLockup theme="light" iconSize={38} fontSize={21} taglineSize={11.5} align="center" />
+          <div style={{ marginBottom: 10, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+            <AssetraBrandLockup theme="light" iconSize={50} fontSize={23} taglineSize={12} align="center" />
           </div>
 
           {/* Card Header */}
