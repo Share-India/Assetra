@@ -25,7 +25,7 @@ Complete step-by-step instructions to deploy **Assetra** on an **AWS Lightsail**
             ┌──────────────────┴──────────────────┐
             │                                     │
             ▼                                     ▼
-   Existing Applications                proxy_pass http://127.0.0.1:8080
+   Existing Applications                proxy_pass http://127.0.0.1:8095
    (Completely untouched)                         │
                                                   ▼
                                       ┌───────────────────────┐
@@ -62,7 +62,7 @@ git pull origin main
 
 Run:
 ```bash
-sudo ss -tulpn | grep 8080
+sudo ss -tulpn | grep 8095
 ```
 If there is no output, port 8080 is free. *(If in use, you can set `ASSETRA_PORT=8085` in `.env`)*.
 
@@ -103,7 +103,7 @@ server {
     client_max_body_size 100M;
 
     location / {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:8095;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
