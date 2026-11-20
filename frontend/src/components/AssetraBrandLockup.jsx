@@ -21,7 +21,7 @@ export function AssetraIcon({ size = 44, style = {} }) {
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.08)",
         overflow: "hidden",
         boxSizing: "border-box",
-        padding: 0,
+        padding: Math.max(3, Math.round(size * 0.08)),
         ...style
       }}
       aria-hidden="true"
