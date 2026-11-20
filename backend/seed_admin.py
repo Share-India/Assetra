@@ -59,17 +59,21 @@ def seed_admin():
 
             if not auth.is_domain_allowed(email):
                 allowed = ", ".join(auth.get_allowed_email_domains())
-                print(f"Error: Email domain is not allowed. Permitted domains: {allowed}")
-                if not sys.stdin.isatty():
-                    sys.exit(1)
-                continue
+                domain = email.split('@')[-1] if '@' in email else ''
+                print(f"Note: Domain '@{domain}' is not in configured ALLOWED_EMAIL_DOMAINS ({allowed}).")
+                if sys.stdin.isatty():
+                    proceed = input("Do you want to proceed with this admin email anyway? [Y/n]: ").strip().lower()
+                    if proceed in ("n", "no"):
+                        continue
+                else:
+                    pass
             break
     else:
         email = email.strip().lower()
         if not auth.is_domain_allowed(email):
             allowed = ", ".join(auth.get_allowed_email_domains())
-            print(f"Error: Email domain is not allowed. Permitted domains: {allowed}")
-            sys.exit(1)
+            domain = email.split('@')[-1] if '@' in email else ''
+            print(f"Note: Domain '@{domain}' is not in configured ALLOWED_EMAIL_DOMAINS ({allowed}). Proceeding as administrator override.")
 
     # 3. Prompt for Password
     password = args.password
@@ -106,7 +110,10 @@ def seed_admin():
     # 4. Save to Database
     db = SessionLocal()
     try:
-        existing = db.query(models.User).filter(models.User.email == email).first()
+        canonical_email = auth.canonicalize_email(email)
+        existing = db.query(models.User).filter(
+            (models.User.email == email) | (models.User.email_canonical == canonical_email)
+        ).first()
         if existing:
             print(f"\nUser with email '{email}' already exists (ID: {existing.id}, Role: {existing.role}, Status: {existing.status}).")
             if sys.stdin.isatty():
@@ -116,9 +123,11 @@ def seed_admin():
 
             if confirm in ("y", "yes"):
                 existing.name = name
+                existing.email_canonical = canonical_email
                 existing.role = "admin"
                 existing.status = "active"
                 existing.is_active = True
+                existing.email_verified = True
                 existing.password_hash = auth.hash_password(password)
                 existing.must_change_password = False
                 
@@ -137,10 +146,12 @@ def seed_admin():
         admin_user = models.User(
             name=name,
             email=email,
+            email_canonical=canonical_email,
             password_hash=auth.hash_password(password),
             role="admin",
             status="active",
             is_active=True,
+            email_verified=True,
             must_change_password=False
         )
         db.add(admin_user)
