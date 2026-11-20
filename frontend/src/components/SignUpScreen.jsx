@@ -3,6 +3,7 @@ import { User, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, Arro
 import TermsModal from "./TermsModal";
 import PrivacyModal from "./PrivacyModal";
 import AssetraBrandLockup from "./AssetraBrandLockup";
+import AuthFeaturePanel from "./AuthFeaturePanel";
 
 export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword, onLoginSuccess, apiBaseUrl }) {
   const [name, setName] = useState("");
@@ -182,9 +183,8 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
     <div style={{
       minHeight: "100dvh",
       width: "100%",
-      background: "linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%)",
+      background: "radial-gradient(ellipse at 50% 20%, #173b75 0%, #0b192c 60%, #030712 100%)",
       display: "flex",
-      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       padding: "24px 16px",
@@ -195,16 +195,43 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
       overflowY: "auto"
     }}>
       <style>{`
-        .far-auth-card {
+        .far-auth-split-wrapper {
           width: 100%;
-          max-width: 440px;
-          min-width: 0;
-          background: rgba(255, 255, 255, 0.98);
-          border-radius: 16px;
-          padding: 32px 28px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+          max-width: 1080px;
+          min-height: 620px;
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          display: flex;
+          flex-direction: row;
+          overflow: hidden;
+          margin: auto;
           box-sizing: border-box;
-          margin: 0 auto;
+        }
+        .far-auth-form-column {
+          flex: 1 1 48%;
+          padding: 40px 36px;
+          display: flex;
+          flex-direction: column;
+          justifyContent: center;
+          box-sizing: border-box;
+          background: #ffffff;
+          min-width: 0;
+        }
+        @media (max-width: 960px) {
+          .far-auth-split-wrapper {
+            flex-direction: column;
+            max-width: 520px;
+            min-height: auto;
+          }
+          .auth-feature-panel {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+            padding: 32px 24px !important;
+          }
+          .far-auth-form-column {
+            padding: 36px 24px !important;
+          }
         }
         @media (max-width: 767px) {
           input {
@@ -212,11 +239,19 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
           }
         }
         @media (max-width: 480px) {
-          .far-auth-card {
-            max-width: 100% !important;
-            padding: 24px 18px !important;
-            border-radius: 14px !important;
+          .far-auth-split-wrapper {
+            border-radius: 14px;
           }
+          .auth-feature-panel {
+            padding: 24px 18px !important;
+          }
+          .far-auth-form-column {
+            padding: 24px 16px !important;
+          }
+        }
+        input:focus-visible, button:focus-visible {
+          outline: 2px solid #2563EB !important;
+          outline-offset: 2px !important;
         }
       `}</style>
 
@@ -224,37 +259,34 @@ export default function SignUpScreen({ onNavigateLogin, onNavigateForgotPassword
       <TermsModal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} />
       <PrivacyModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
 
-      <div style={{
-        width: "100%",
-        maxWidth: 440,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: "auto 0"
-      }}>
-        {/* Brand Lockup: White version on dark panel */}
-        <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
-          <AssetraBrandLockup theme="dark" iconSize={46} fontSize={22} taglineSize={12} align="center" />
-        </div>
+      <div className="far-auth-split-wrapper">
+        {/* Left Side: Share India & Project Features */}
+        <AuthFeaturePanel />
 
-        <div className="far-auth-card">
-        {/* Card Header */}
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <h1 style={{
-            fontSize: 22,
-            fontWeight: 700,
-            color: "#0b192c",
-            margin: "0 0 6px 0",
-            letterSpacing: "-0.02em"
-          }}>
-            {awaitingVerification ? "Verify Your Email" : "Create Your Account"}
-          </h1>
-          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
-            {awaitingVerification
-              ? `We sent a 6-digit code to ${email}`
-              : "Create an account for Assetra"}
-          </p>
-        </div>
+        {/* Right Side: Assetra Branding & Sign Up Form */}
+        <div className="far-auth-form-column">
+          {/* Assetra Brand Lockup on Right Side Form */}
+          <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+            <AssetraBrandLockup theme="light" iconSize={48} fontSize={24} taglineSize={13} align="center" />
+          </div>
+
+          {/* Card Header */}
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <h1 style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: "#0b192c",
+              margin: "0 0 6px 0",
+              letterSpacing: "-0.02em"
+            }}>
+              {awaitingVerification ? "Verify Your Email" : "Create Your Account"}
+            </h1>
+            <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+              {awaitingVerification
+                ? `We sent a 6-digit code to ${email}`
+                : "Create an account for Assetra"}
+            </p>
+          </div>
 
         {/* Error Alert */}
         {error && (

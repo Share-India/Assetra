@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, Shield, ArrowLeft, KeyRound } from "lucide-react";
 import AssetraBrandLockup from "./AssetraBrandLockup";
+import AuthFeaturePanel from "./AuthFeaturePanel";
 
 export default function LoginScreen({
   onLoginSuccess,
@@ -195,9 +196,8 @@ export default function LoginScreen({
     <div style={{
       minHeight: "100dvh",
       width: "100%",
-      background: "linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%)",
+      background: "radial-gradient(ellipse at 50% 20%, #173b75 0%, #0b192c 60%, #030712 100%)",
       display: "flex",
-      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       padding: "24px 16px",
@@ -208,16 +208,43 @@ export default function LoginScreen({
       overflowY: "auto"
     }}>
       <style>{`
-        .far-auth-card {
+        .far-auth-split-wrapper {
           width: 100%;
-          max-width: 410px;
-          min-width: 0;
-          background: rgba(255, 255, 255, 0.98);
-          border-radius: 16px;
-          padding: 36px 28px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+          max-width: 1080px;
+          min-height: 620px;
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          display: flex;
+          flex-direction: row;
+          overflow: hidden;
+          margin: auto;
           box-sizing: border-box;
-          margin: 0 auto;
+        }
+        .far-auth-form-column {
+          flex: 1 1 48%;
+          padding: 44px 38px;
+          display: flex;
+          flex-direction: column;
+          justifyContent: center;
+          box-sizing: border-box;
+          background: #ffffff;
+          min-width: 0;
+        }
+        @media (max-width: 960px) {
+          .far-auth-split-wrapper {
+            flex-direction: column;
+            max-width: 520px;
+            min-height: auto;
+          }
+          .auth-feature-panel {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+            padding: 32px 24px !important;
+          }
+          .far-auth-form-column {
+            padding: 36px 24px !important;
+          }
         }
         @media (max-width: 767px) {
           input {
@@ -225,10 +252,14 @@ export default function LoginScreen({
           }
         }
         @media (max-width: 480px) {
-          .far-auth-card {
-            max-width: 100% !important;
+          .far-auth-split-wrapper {
+            border-radius: 14px;
+          }
+          .auth-feature-panel {
             padding: 24px 18px !important;
-            border-radius: 14px !important;
+          }
+          .far-auth-form-column {
+            padding: 24px 16px !important;
           }
         }
         input:focus-visible, button:focus-visible {
@@ -237,43 +268,40 @@ export default function LoginScreen({
         }
       `}</style>
 
-      <div style={{
-        width: "100%",
-        maxWidth: 410,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: "auto 0"
-      }}>
-        {/* Brand Lockup: White version on dark panel */}
-        <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
-          <AssetraBrandLockup theme="dark" iconSize={46} fontSize={22} taglineSize={12} align="center" />
-        </div>
+      <div className="far-auth-split-wrapper">
+        {/* Left Side: Share India & Project Features */}
+        <AuthFeaturePanel />
 
-        <div className="far-auth-card">
-        {/* Card Header */}
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <h1 style={{
-            fontSize: 22,
-            fontWeight: 700,
-            color: "#0b192c",
-            margin: "0 0 6px 0",
-            letterSpacing: "-0.02em"
-          }}>
-            {mode === "login"
-              ? "Sign In"
-              : mode === "forgot_request"
-              ? "Forgot Password"
-              : "Reset Your Password"}
-          </h1>
-          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
-            {mode === "login"
-              ? "Sign in to access Assetra & saved valuation analyses"
-              : mode === "forgot_request"
-              ? "Enter your registered email to receive a password reset token"
-              : "Enter your reset token and choose a new password"}
-          </p>
-        </div>
+        {/* Right Side: Assetra Branding & Sign In Form */}
+        <div className="far-auth-form-column">
+          {/* Assetra Brand Lockup on Right Side Form */}
+          <div style={{ marginBottom: 20, textAlign: "center", width: "100%", display: "flex", justifyContent: "center" }}>
+            <AssetraBrandLockup theme="light" iconSize={48} fontSize={24} taglineSize={13} align="center" />
+          </div>
+
+          {/* Card Header */}
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <h1 style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: "#0b192c",
+              margin: "0 0 6px 0",
+              letterSpacing: "-0.02em"
+            }}>
+              {mode === "login"
+                ? "Sign In"
+                : mode === "forgot_request"
+                ? "Forgot Password"
+                : "Reset Your Password"}
+            </h1>
+            <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+              {mode === "login"
+                ? "Sign in to access Assetra & saved valuation analyses"
+                : mode === "forgot_request"
+                ? "Enter your registered email to receive a password reset token"
+                : "Enter your reset token and choose a new password"}
+            </p>
+          </div>
 
         {/* Success Alert */}
         {successMsg && (
