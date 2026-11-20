@@ -75,11 +75,7 @@ services:
     container_name: assetra-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - /var/www/certbot:/var/www/certbot
+      - "${ASSETRA_PORT:-8080}:80"
     depends_on:
       - backend
     networks:
