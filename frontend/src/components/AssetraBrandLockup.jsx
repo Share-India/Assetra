@@ -27,7 +27,7 @@ export function AssetraIcon({ size = 44, style = {} }) {
       aria-hidden="true"
     >
       <img
-        src="/share_india_ribbon_logo.png?v=3"
+        src="/Assetra.png?v=3"
         alt="Assetra"
         style={{
           width: "100%",

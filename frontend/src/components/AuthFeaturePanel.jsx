@@ -88,8 +88,8 @@ export default function AuthFeaturePanel() {
             }}
           >
             <img
-              src="/share_india_ribbon_logo.png?v=3"
-              alt="Share India"
+              src="/share_india_ribbon.png?v=3"
+              alt="Share India Insurance Brokers"
               style={{
                 width: "100%",
                 height: "100%",
