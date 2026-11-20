@@ -88,7 +88,7 @@ export default function AuthFeaturePanel() {
             }}
           >
             <img
-              src="/Assetra.png"
+              src="/share_india_ribbon_logo.png?v=3"
               alt="Share India"
               style={{
                 width: "100%",
