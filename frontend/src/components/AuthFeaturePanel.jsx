@@ -69,26 +69,30 @@ export default function AuthFeaturePanel() {
       />
 
       <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Company Header with Official Share India Logo */}
+        {/* Company Header with Brand Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
           <div
             style={{
               background: "#ffffff",
-              padding: "4px 8px",
-              borderRadius: 8,
+              width: 44,
+              height: 44,
+              borderRadius: 10,
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
               boxShadow: "0 3px 12px rgba(0, 0, 0, 0.22)",
-              border: "1px solid rgba(255, 255, 255, 0.9)"
+              border: "1px solid rgba(255, 255, 255, 0.9)",
+              flexShrink: 0,
+              padding: 4,
+              boxSizing: "border-box"
             }}
           >
             <img
-              src="/share_india_logo.png"
-              alt="Share India - You generate, we multiply"
+              src="/Assetra.png"
+              alt="Share India"
               style={{
-                height: 42,
-                width: "auto",
+                width: "100%",
+                height: "100%",
                 objectFit: "contain",
                 display: "block"
               }}
@@ -106,7 +110,7 @@ export default function AuthFeaturePanel() {
             >
               Enterprise Platform
             </span>
-            <span style={{ fontSize: 12.5, color: "#cbd5e1", fontWeight: 600 }}>
+            <span style={{ fontSize: 13, color: "#e2e8f0", fontWeight: 600 }}>
               Share India Insurance Brokers
             </span>
           </div>
