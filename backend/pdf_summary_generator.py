@@ -8,6 +8,7 @@ from sqlalchemy import text
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
     SimpleDocTemplate,
@@ -303,13 +304,30 @@ def fetch_grouped_data(db: Session, analysis_id: int) -> Tuple[List[Dict[str, An
 
 def build_pdf_table(data_rows: List[Dict[str, Any]], table_title: str = "") -> Table:
     """Builds a formatted ReportLab Table for an asset grouping with bold Total row."""
-    # Table header
+    hdr_left_style = ParagraphStyle(
+        "HdrLeft",
+        fontName="Helvetica-Bold",
+        fontSize=8,
+        leading=10,
+        textColor=colors.white,
+        alignment=TA_LEFT
+    )
+    hdr_right_style = ParagraphStyle(
+        "HdrRight",
+        fontName="Helvetica-Bold",
+        fontSize=8,
+        leading=10,
+        textColor=colors.white,
+        alignment=TA_RIGHT
+    )
+
+    # Table header using Paragraphs to guarantee proper wrapping and prevent any column overlap
     headers = [
-        "Particulars",
-        "Number of assets",
-        "Capitalized cost (INR)",
-        "New replacement value (INR)",
-        "Increase %"
+        Paragraph("Particulars", hdr_left_style),
+        Paragraph("Number of assets", hdr_right_style),
+        Paragraph("Capitalized cost (INR)", hdr_right_style),
+        Paragraph("New replacement value (INR)", hdr_right_style),
+        Paragraph("Increase %", hdr_right_style)
     ]
     
     rows = [headers]
@@ -341,17 +359,19 @@ def build_pdf_table(data_rows: List[Dict[str, Any]], table_title: str = "") -> T
     ])
 
     # Printable width is 523.27pt on A4 (595.27 - 72)
-    col_widths = [163, 75, 110, 115, 60]
+    # Generous widths for monetary columns ensures zero text overlap
+    col_widths = [105, 80, 135, 145, 58]
     
     t_style = [
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0A192F")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 8.5),
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 5),
-        ("TOPPADDING", (0, 0), (-1, 0), 5),
-        ("ALIGN", (0, 0), (0, -1), "LEFT"),
-        ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
+        ("BOTTOMPADDING", (0, 0), (-1, 0), 6),
+        ("TOPPADDING", (0, 0), (-1, 0), 6),
+        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (0, 1), (0, -1), "LEFT"),
+        ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
         ("FONTNAME", (0, 1), (-1, -2), "Helvetica"),
         ("FONTSIZE", (0, 1), (-1, -2), 8),
         ("TOPPADDING", (0, 1), (-1, -1), 4),
