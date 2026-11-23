@@ -13,20 +13,30 @@ from database import get_db
 import models
 from auth import get_current_active_user, record_audit_event
 from report_generator import generate_excel_report_stream
+from pdf_summary_generator import generate_pdf_summary_stream
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def get_master_version_hash() -> str:
-    """Computes SHA-256 of the WPI master dataset file."""
+    """Computes SHA-256 of the active WPI master dataset file including RULES sheet."""
     master_path = os.path.join(BASE_DIR, "data", "WPI_MASTER_DATASET_CATEGORYWISE_v6.xlsx")
+    if not os.path.exists(master_path):
+        master_path = os.path.join(BASE_DIR, "data", "WPI_MASTER_DATASET_CATEGORYWISE.xlsx")
     if not os.path.exists(master_path):
         return "unknown"
     h = hashlib.sha256()
     with open(master_path, "rb") as f:
         while chunk := f.read(65536):
             h.update(chunk)
+    # Also incorporate active Building and Land method to guarantee cache invalidation on rule changes
+    try:
+        import calculator
+        rules_sig = f":rule_{getattr(calculator, 'BUILDING_AND_LAND_METHOD', 'compound')}:{getattr(calculator, 'BUILDING_ESCALATION_RATE', 0.05)}:{getattr(calculator, 'LAND_ESCALATION_RATE', 0.05)}:{getattr(calculator, 'REFERENCE_YEAR', 2025)}"
+        h.update(rules_sig.encode("utf-8"))
+    except Exception:
+        pass
     return h.hexdigest()
 
 @router.get("", response_model=dict)
@@ -343,6 +353,22 @@ def get_analysis_rows(
         "rows": formatted_rows
     }
 
+def check_analysis_view_permission(analysis: models.Analysis, current_user: models.User):
+    """Enforces: owner only, admin only if ADMIN_CAN_VIEW_ROWS is true."""
+    if not analysis:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Analysis not found")
+    if analysis.user_id == current_user.id:
+        return
+    if current_user.role == "admin":
+        admin_can_view = os.getenv("ADMIN_CAN_VIEW_ROWS", "false").strip().lower() in ("true", "1", "yes")
+        if not admin_can_view:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin access to user data rows is restricted"
+            )
+        return
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Analysis not found")
+
 @router.get("/{analysis_id}/download")
 def download_analysis_report(
     analysis_id: int,
@@ -351,8 +377,7 @@ def download_analysis_report(
 ):
     """Builds the Excel report ON-DEMAND from saved rows. Zero files saved to disk. Returns 404 for unauthorized users."""
     analysis = db.query(models.Analysis).filter(models.Analysis.id == analysis_id).first()
-    if not analysis or (analysis.user_id != current_user.id and current_user.role != "admin"):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Analysis not found")
+    check_analysis_view_permission(analysis, current_user)
 
     rows = db.query(models.AnalysisRow).filter(
         models.AnalysisRow.analysis_id == analysis_id
@@ -365,6 +390,30 @@ def download_analysis_report(
     return StreamingResponse(
         excel_stream,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+@router.get("/{analysis_id}/summary.pdf")
+def download_analysis_summary_pdf(
+    analysis_id: int,
+    current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Builds the Valuation Summary PDF report ON-DEMAND from saved analysis_rows with SQL grouping.
+    No recalculation, no Gemini calls, and zero files stored on disk.
+    Permissions: Owner only, or admin only if ADMIN_CAN_VIEW_ROWS is true.
+    """
+    analysis = db.query(models.Analysis).filter(models.Analysis.id == analysis_id).first()
+    check_analysis_view_permission(analysis, current_user)
+
+    pdf_stream = generate_pdf_summary_stream(analysis, db)
+    safe_name = (analysis.company_name or "FAR").replace(" ", "_")
+    filename = f"Valuation_Summary_{safe_name}_{analysis.id}.pdf"
+
+    return StreamingResponse(
+        pdf_stream,
+        media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'}
     )
 

@@ -30,6 +30,7 @@ HEADLINE_WPI_GROUP = "All Commodities (headline)"
 
 BUILDING_ESCALATION_RATE = 0.05
 LAND_ESCALATION_RATE = 0.05
+BUILDING_AND_LAND_METHOD = "compound"
 
 import os
 REFERENCE_YEAR = 2025
@@ -77,7 +78,7 @@ WPI_DATA = None
 def load_datasets(force: bool = False):
     global WPI_DATA
     global VALID_WPI_GROUPS
-    global REFERENCE_YEAR, LATEST_WPI_YEAR, BUILDING_ESCALATION_RATE, LAND_ESCALATION_RATE
+    global REFERENCE_YEAR, LATEST_WPI_YEAR, BUILDING_ESCALATION_RATE, LAND_ESCALATION_RATE, BUILDING_AND_LAND_METHOD
     import time
     if WPI_DATA is not None and not force:
         return
@@ -183,6 +184,13 @@ def load_datasets(force: bool = False):
                             LATEST_WPI_YEAR = REFERENCE_YEAR
                             STAGE_END_YEAR["2011-12"] = REFERENCE_YEAR
                             logger.info(f"[RULES] Reference Year loaded from RULES sheet: {REFERENCE_YEAR}")
+                    elif 'building and land method' in r_name or ('building' in r_name and 'method' in r_name):
+                        val_clean = action_text.strip().lower()
+                        if 'simple' in val_clean:
+                            BUILDING_AND_LAND_METHOD = "simple"
+                        else:
+                            BUILDING_AND_LAND_METHOD = "compound"
+                        logger.info(f"[RULES] Building and Land Method loaded from RULES sheet: {BUILDING_AND_LAND_METHOD}")
                     elif 'building' in r_name:
                         m = re.search(r'(\d+(?:\.\d+)?)\s*%', action_text)
                         if m:
@@ -1098,10 +1106,17 @@ def process_file(file_path, wpi_group, user_mapping_dict=None, header_row_idx=0,
         elif is_building:
             status = "Success"
             years = max(0, REFERENCE_YEAR - purchaseYear)
-            replacementValue = acquisitionValue * ((1 + BUILDING_ESCALATION_RATE) ** years)
-            calculation_method = "5% Annual Compound Escalation"
-            formula_used = f"{acquisitionValue} * (1 + {BUILDING_ESCALATION_RATE}) ^ {years}"
-            note = "Used 5% compound escalation for Building"
+            rate_pct_str = f"{int(round(BUILDING_ESCALATION_RATE * 100))}%"
+            if BUILDING_AND_LAND_METHOD == "simple":
+                replacementValue = acquisitionValue * (1 + BUILDING_ESCALATION_RATE * years)
+                calculation_method = f"{rate_pct_str} Annual Simple Escalation"
+                formula_used = f"{acquisitionValue} * (1 + {BUILDING_ESCALATION_RATE} * {years})"
+                note = f"Used {rate_pct_str} simple escalation for Building"
+            else:
+                replacementValue = acquisitionValue * ((1 + BUILDING_ESCALATION_RATE) ** years)
+                calculation_method = f"{rate_pct_str} Annual Compound Escalation"
+                formula_used = f"{acquisitionValue} * (1 + {BUILDING_ESCALATION_RATE}) ^ {years}"
+                note = f"Used {rate_pct_str} compound escalation for Building"
             difference = replacementValue - acquisitionValue
             row_obj["wpiGroup"] = "Building"
             
@@ -1110,10 +1125,17 @@ def process_file(file_path, wpi_group, user_mapping_dict=None, header_row_idx=0,
         elif is_land:
             status = "Success"
             years = max(0, REFERENCE_YEAR - purchaseYear)
-            replacementValue = acquisitionValue * ((1 + BUILDING_ESCALATION_RATE) ** years)
-            calculation_method = "5% Annual Compound Escalation"
-            formula_used = f"{acquisitionValue} * (1 + {BUILDING_ESCALATION_RATE}) ^ {years}"
-            note = "Used 5% compound escalation for Land"
+            rate_pct_str = f"{int(round(LAND_ESCALATION_RATE * 100))}%"
+            if BUILDING_AND_LAND_METHOD == "simple":
+                replacementValue = acquisitionValue * (1 + LAND_ESCALATION_RATE * years)
+                calculation_method = f"{rate_pct_str} Annual Simple Escalation"
+                formula_used = f"{acquisitionValue} * (1 + {LAND_ESCALATION_RATE} * {years})"
+                note = f"Used {rate_pct_str} simple escalation for Land"
+            else:
+                replacementValue = acquisitionValue * ((1 + LAND_ESCALATION_RATE) ** years)
+                calculation_method = f"{rate_pct_str} Annual Compound Escalation"
+                formula_used = f"{acquisitionValue} * (1 + {LAND_ESCALATION_RATE}) ^ {years}"
+                note = f"Used {rate_pct_str} compound escalation for Land"
             difference = replacementValue - acquisitionValue
             row_obj["wpiGroup"] = "Land"
             

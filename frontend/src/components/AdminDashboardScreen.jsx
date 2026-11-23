@@ -2038,474 +2038,474 @@ export default function AdminDashboardScreen({ token, adminUser, apiBaseUrl, onB
 
           {settingsSubTab === "general" && (
             <>
-          {/* Settings Section 1: Dynamic Admin Role Management */}
-          <div style={{
-            background: "#ffffff",
-            borderRadius: 12,
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-            overflow: "hidden"
-          }}>
-            <div className="admin-panel-header">
-              <div>
-                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
-                  <ShieldCheck size={18} color="#1e3e62" />
-                  Administrator Role Management ({adminsList.length})
-                </h2>
-                <p style={{ fontSize: 13, color: "#64748b", margin: "4px 0 0 0" }}>
-                  All administrators have equal dashboard permissions and full data visibility, including promoting and managing administrators.
-                </p>
-              </div>
+              {/* Settings Section 1: Dynamic Admin Role Management */}
+              <div style={{
+                background: "#ffffff",
+                borderRadius: 12,
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+                overflow: "hidden"
+              }}>
+                <div className="admin-panel-header">
+                  <div>
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                      <ShieldCheck size={18} color="#1e3e62" />
+                      Administrator Role Management ({adminsList.length})
+                    </h2>
+                    <p style={{ fontSize: 13, color: "#64748b", margin: "4px 0 0 0" }}>
+                      All administrators have equal dashboard permissions and full data visibility, including promoting and managing administrators.
+                    </p>
+                  </div>
 
-              <button
-                id="add-admin-btn"
-                onClick={() => {
-                  setNewAdminEmail("");
-                  setAddAdminError("");
-                  setAddAdminSuccess("");
-                  setShowAddAdminModal(true);
-                }}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: "linear-gradient(135deg, #1e3e62 0%, #0b192c 100%)",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: 8,
-                  padding: "9px 16px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: "0 2px 6px rgba(30, 62, 98, 0.25)",
-                  flexShrink: 0
-                }}
-              >
-                <UserPlus size={16} />
-                <span>Add Admin</span>
-              </button>
-            </div>
+                  <button
+                    id="add-admin-btn"
+                    onClick={() => {
+                      setNewAdminEmail("");
+                      setAddAdminError("");
+                      setAddAdminSuccess("");
+                      setShowAddAdminModal(true);
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      background: "linear-gradient(135deg, #1e3e62 0%, #0b192c 100%)",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: 8,
+                      padding: "9px 16px",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      boxShadow: "0 2px 6px rgba(30, 62, 98, 0.25)",
+                      flexShrink: 0
+                    }}
+                  >
+                    <UserPlus size={16} />
+                    <span>Add Admin</span>
+                  </button>
+                </div>
 
-            <div className="admin-table-scroll-container">
-              <table style={{ width: "100%", minWidth: 760, borderCollapse: "collapse", fontSize: 13 }}>
-                <thead>
-                  <tr style={{ background: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" }}>
-                    <th style={{ padding: "12px 20px", fontWeight: 600 }}>Administrator</th>
-                    <th style={{ padding: "12px 20px", fontWeight: 600 }}>Email Address</th>
-                    <th style={{ padding: "12px 20px", fontWeight: 600 }}>Role / Authority</th>
-                    <th style={{ padding: "12px 20px", fontWeight: 600 }}>Status</th>
-                    <th style={{ padding: "12px 20px", fontWeight: 600 }}>Member Since</th>
-                    <th style={{ padding: "12px 20px", fontWeight: 600 }}>Last Login</th>
-                    <th style={{ padding: "12px 20px", fontWeight: 600, textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loadingAdmins ? (
-                    <tr>
-                      <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "#64748b" }}>
-                        Loading administrators...
-                      </td>
-                    </tr>
-                  ) : adminsList.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "#64748b" }}>
-                        No administrators found.
-                      </td>
-                    </tr>
-                  ) : (
-                    adminsList.map((admin) => {
-                      const isPrimary = admin.is_primary_admin;
-                      return (
-                        <tr key={admin.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                          <td style={{ padding: "12px 20px", fontWeight: 600, color: "#1e293b" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{
-                                width: 30,
-                                height: 30,
-                                borderRadius: "50%",
-                                background: isPrimary ? "#fef3c7" : "#e0e7ff",
-                                color: isPrimary ? "#b45309" : "#4338ca",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: 700,
-                                fontSize: 12
-                              }}>
-                                {isPrimary ? <Crown size={15} /> : <ShieldCheck size={15} />}
-                              </div>
-                              <div>
-                                <div>{admin.name}</div>
-                                <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 400 }}>User ID #{admin.id}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td style={{ padding: "12px 20px", color: "#475569" }}>
-                            <code>{admin.email}</code>
-                          </td>
-                          <td style={{ padding: "12px 20px" }}>
-                            {isPrimary ? (
-                              <span style={{
-                                background: "#fef3c7",
-                                color: "#b45309",
-                                border: "1px solid #fde68a",
-                                padding: "3px 10px",
-                                borderRadius: 6,
-                                fontSize: 11,
-                                fontWeight: 700,
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 4
-                              }}>
-                                <Crown size={12} /> Primary Admin
-                              </span>
-                            ) : (
-                              <span style={{
-                                background: "#e0e7ff",
-                                color: "#4338ca",
-                                border: "1px solid #c7d2fe",
-                                padding: "3px 10px",
-                                borderRadius: 6,
-                                fontSize: 11,
-                                fontWeight: 700,
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 4
-                              }}>
-                                <ShieldCheck size={12} /> Administrator
-                              </span>
-                            )}
-                          </td>
-                          <td style={{ padding: "12px 20px" }}>
-                            <span style={{
-                              background: admin.status === "active" ? "#dcfce7" : "#fee2e2",
-                              color: admin.status === "active" ? "#15803d" : "#b91c1c",
-                              padding: "2px 8px",
-                              borderRadius: 6,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              textTransform: "uppercase"
-                            }}>
-                              {admin.status || (admin.is_active ? "active" : "disabled")}
-                            </span>
-                          </td>
-                          <td style={{ padding: "12px 20px", color: "#64748b", whiteSpace: "nowrap" }}>
-                            {formatDate(admin.created_at)}
-                          </td>
-                          <td style={{ padding: "12px 20px", color: admin.last_login_at ? "#0f172a" : "#94a3b8", fontWeight: admin.last_login_at ? 600 : 400, whiteSpace: "nowrap" }}>
-                            {admin.last_login_at ? formatDate(admin.last_login_at) : <span style={{ fontStyle: "italic" }}>Never logged in</span>}
-                          </td>
-                          <td style={{ padding: "12px 20px", textAlign: "right" }}>
-                            {adminsList.length <= 1 ? (
-                              <span style={{ fontSize: 12, color: "#94a3b8", fontStyle: "italic" }} title="The system must retain at least one administrator">
-                                Only Admin
-                              </span>
-                            ) : (
-                              <button
-                                onClick={() => setDemoteConfirmUser(admin)}
-                                disabled={demoteLoading}
-                                style={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: 6,
-                                  background: "#fee2e2",
-                                  color: "#b91c1c",
-                                  border: "1px solid #fecaca",
-                                  borderRadius: 6,
-                                  padding: "5px 10px",
-                                  fontSize: 12,
-                                  fontWeight: 600,
-                                  cursor: "pointer"
-                                }}
-                              >
-                                <UserMinus size={13} />
-                                <span>Remove Admin</span>
-                              </button>
-                            )}
+                <div className="admin-table-scroll-container">
+                  <table style={{ width: "100%", minWidth: 760, borderCollapse: "collapse", fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ background: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" }}>
+                        <th style={{ padding: "12px 20px", fontWeight: 600 }}>Administrator</th>
+                        <th style={{ padding: "12px 20px", fontWeight: 600 }}>Email Address</th>
+                        <th style={{ padding: "12px 20px", fontWeight: 600 }}>Role / Authority</th>
+                        <th style={{ padding: "12px 20px", fontWeight: 600 }}>Status</th>
+                        <th style={{ padding: "12px 20px", fontWeight: 600 }}>Member Since</th>
+                        <th style={{ padding: "12px 20px", fontWeight: 600 }}>Last Login</th>
+                        <th style={{ padding: "12px 20px", fontWeight: 600, textAlign: "right" }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loadingAdmins ? (
+                        <tr>
+                          <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "#64748b" }}>
+                            Loading administrators...
                           </td>
                         </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Settings Section 2: System Configuration Card */}
-          <div style={{
-            background: "#ffffff",
-            borderRadius: 12,
-            border: "1px solid #e2e8f0",
-            padding: "20px 24px",
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
-          }}>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 8 }}>
-              <Settings size={18} color="#4f46e5" />
-              Administrative Settings & System Policies
-            </h2>
-            <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 16px 0" }}>
-              Core system behavior, approval gates, and authorization policies
-            </p>
-
-            <div className="admin-config-grid">
-              <div style={{ padding: "14px 16px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>ADMIN APPROVAL REQUIREMENT</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginTop: 4 }}>
-                  {adminStats?.require_admin_approval ? "Enabled (New users await approval)" : "Disabled (Direct user registration)"}
-                </div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-                  Controlled via <code>REQUIRE_ADMIN_APPROVAL</code> in backend config
+                      ) : adminsList.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "#64748b" }}>
+                            No administrators found.
+                          </td>
+                        </tr>
+                      ) : (
+                        adminsList.map((admin) => {
+                          const isPrimary = admin.is_primary_admin;
+                          return (
+                            <tr key={admin.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                              <td style={{ padding: "12px 20px", fontWeight: 600, color: "#1e293b" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <div style={{
+                                    width: 30,
+                                    height: 30,
+                                    borderRadius: "50%",
+                                    background: isPrimary ? "#fef3c7" : "#e0e7ff",
+                                    color: isPrimary ? "#b45309" : "#4338ca",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontWeight: 700,
+                                    fontSize: 12
+                                  }}>
+                                    {isPrimary ? <Crown size={15} /> : <ShieldCheck size={15} />}
+                                  </div>
+                                  <div>
+                                    <div>{admin.name}</div>
+                                    <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 400 }}>User ID #{admin.id}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td style={{ padding: "12px 20px", color: "#475569" }}>
+                                <code>{admin.email}</code>
+                              </td>
+                              <td style={{ padding: "12px 20px" }}>
+                                {isPrimary ? (
+                                  <span style={{
+                                    background: "#fef3c7",
+                                    color: "#b45309",
+                                    border: "1px solid #fde68a",
+                                    padding: "3px 10px",
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 4
+                                  }}>
+                                    <Crown size={12} /> Primary Admin
+                                  </span>
+                                ) : (
+                                  <span style={{
+                                    background: "#e0e7ff",
+                                    color: "#4338ca",
+                                    border: "1px solid #c7d2fe",
+                                    padding: "3px 10px",
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 4
+                                  }}>
+                                    <ShieldCheck size={12} /> Administrator
+                                  </span>
+                                )}
+                              </td>
+                              <td style={{ padding: "12px 20px" }}>
+                                <span style={{
+                                  background: admin.status === "active" ? "#dcfce7" : "#fee2e2",
+                                  color: admin.status === "active" ? "#15803d" : "#b91c1c",
+                                  padding: "2px 8px",
+                                  borderRadius: 6,
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  textTransform: "uppercase"
+                                }}>
+                                  {admin.status || (admin.is_active ? "active" : "disabled")}
+                                </span>
+                              </td>
+                              <td style={{ padding: "12px 20px", color: "#64748b", whiteSpace: "nowrap" }}>
+                                {formatDate(admin.created_at)}
+                              </td>
+                              <td style={{ padding: "12px 20px", color: admin.last_login_at ? "#0f172a" : "#94a3b8", fontWeight: admin.last_login_at ? 600 : 400, whiteSpace: "nowrap" }}>
+                                {admin.last_login_at ? formatDate(admin.last_login_at) : <span style={{ fontStyle: "italic" }}>Never logged in</span>}
+                              </td>
+                              <td style={{ padding: "12px 20px", textAlign: "right" }}>
+                                {adminsList.length <= 1 ? (
+                                  <span style={{ fontSize: 12, color: "#94a3b8", fontStyle: "italic" }} title="The system must retain at least one administrator">
+                                    Only Admin
+                                  </span>
+                                ) : (
+                                  <button
+                                    onClick={() => setDemoteConfirmUser(admin)}
+                                    disabled={demoteLoading}
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: 6,
+                                      background: "#fee2e2",
+                                      color: "#b91c1c",
+                                      border: "1px solid #fecaca",
+                                      borderRadius: 6,
+                                      padding: "5px 10px",
+                                      fontSize: 12,
+                                      fontWeight: 600,
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    <UserMinus size={13} />
+                                    <span>Remove Admin</span>
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
-              <div style={{ padding: "14px 16px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>PRIMARY ADMINISTRATOR</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginTop: 4 }}>
-                  {adminStats?.primary_admin_email || "communication.ins@shareindia.co.in"}
-                </div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-                  Permanent authority with permissions to manage administrator roles
-                </div>
-              </div>
+              {/* Settings Section 2: System Configuration Card */}
+              <div style={{
+                background: "#ffffff",
+                borderRadius: 12,
+                border: "1px solid #e2e8f0",
+                padding: "20px 24px",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
+              }}>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                  <Settings size={18} color="#4f46e5" />
+                  Administrative Settings & System Policies
+                </h2>
+                <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 16px 0" }}>
+                  Core system behavior, approval gates, and authorization policies
+                </p>
 
-              <div style={{ padding: "14px 16px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>DYNAMIC ROLE RBAC</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#16a34a", marginTop: 4 }}>
-                  Active ({adminsList.length || 1} Total Admins)
-                </div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-                  Equal administrative dashboard permissions for all promoted admins
+                <div className="admin-config-grid">
+                  <div style={{ padding: "14px 16px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>ADMIN APPROVAL REQUIREMENT</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginTop: 4 }}>
+                      {adminStats?.require_admin_approval ? "Enabled (New users await approval)" : "Disabled (Direct user registration)"}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                      Controlled via <code>REQUIRE_ADMIN_APPROVAL</code> in backend config
+                    </div>
+                  </div>
+
+                  <div style={{ padding: "14px 16px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>PRIMARY ADMINISTRATOR</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginTop: 4 }}>
+                      {adminStats?.primary_admin_email || "communication.ins@shareindia.co.in"}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                      Permanent authority with permissions to manage administrator roles
+                    </div>
+                  </div>
+
+                  <div style={{ padding: "14px 16px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>DYNAMIC ROLE RBAC</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#16a34a", marginTop: 4 }}>
+                      Active ({adminsList.length || 1} Total Admins)
+                    </div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                      Equal administrative dashboard permissions for all promoted admins
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          </>
+            </>
           )}
 
           {/* Settings Section 2: Shared Column Aliases - Advanced (Admin Only) */}
           {settingsSubTab === "advanced" && (
-          <div style={{
-            background: "#ffffff",
-            borderRadius: 12,
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-            overflow: "hidden"
-          }}>
-            <div className="admin-panel-header">
-              <div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
-                  <FileSpreadsheet size={18} color="#4f46e5" />
-                  ASSETRA Column Aliases ({filteredAliases.length})
-                </h3>
-                <p style={{ fontSize: 13, color: "#64748b", margin: "4px 0 0 0" }}>
-                  Learned column aliases mapped to canonical valuation fields. Content validation summaries are cached globally (raw user sample values are never stored).
-                </p>
+            <div style={{
+              background: "#ffffff",
+              borderRadius: 12,
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+              overflow: "hidden"
+            }}>
+              <div className="admin-panel-header">
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                    <FileSpreadsheet size={18} color="#4f46e5" />
+                    ASSETRA Column Aliases ({filteredAliases.length})
+                  </h3>
+                  <p style={{ fontSize: 13, color: "#64748b", margin: "4px 0 0 0" }}>
+                    Learned column aliases mapped to canonical valuation fields. Content validation summaries are cached globally (raw user sample values are never stored).
+                  </p>
+                </div>
+
+                <div className="admin-alias-filter" style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                  <select
+                    value={aliasStatusFilter}
+                    onChange={(e) => setAliasStatusFilter(e.target.value)}
+                    style={{
+                      padding: "6px 12px",
+                      fontSize: 12,
+                      border: "1px solid #cbd5e1",
+                      borderRadius: 6,
+                      background: "#ffffff",
+                      fontWeight: 500
+                    }}
+                  >
+                    <option value="all">All Statuses ({columnAliases.length})</option>
+                    <option value="pending">Pending ({columnAliases.filter(a => a.status === "pending").length})</option>
+                    <option value="conflict">Conflicts ({pendingOrConflictingAliases.filter(a => a.status === "conflict" || ((a.normalized_header || "").trim().toLowerCase() && conflictHeaderSet.has((a.normalized_header || "").trim().toLowerCase()))).length})</option>
+                    <option value="approved">Approved ({columnAliases.filter(a => a.status === "approved").length})</option>
+                    <option value="rejected">Rejected ({columnAliases.filter(a => a.status === "rejected").length})</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="admin-alias-filter" style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                <select
-                  value={aliasStatusFilter}
-                  onChange={(e) => setAliasStatusFilter(e.target.value)}
-                  style={{
-                    padding: "6px 12px",
-                    fontSize: 12,
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 6,
-                    background: "#ffffff",
-                    fontWeight: 500
-                  }}
-                >
-                  <option value="all">All Statuses ({columnAliases.length})</option>
-                  <option value="pending">Pending ({columnAliases.filter(a => a.status === "pending").length})</option>
-                  <option value="conflict">Conflicts ({pendingOrConflictingAliases.filter(a => a.status === "conflict" || ((a.normalized_header || "").trim().toLowerCase() && conflictHeaderSet.has((a.normalized_header || "").trim().toLowerCase()))).length})</option>
-                  <option value="approved">Approved ({columnAliases.filter(a => a.status === "approved").length})</option>
-                  <option value="rejected">Rejected ({columnAliases.filter(a => a.status === "rejected").length})</option>
-                </select>
-              </div>
-            </div>
-
-            {filteredAliases.length === 0 ? (
-              <div style={{ padding: 36, textAlign: "center", color: "#64748b", fontSize: 14 }}>
-                No custom column aliases found matching filter.
-              </div>
-            ) : (
-              <div className="admin-table-scroll-container">
-                <table style={{ width: "100%", minWidth: 820, borderCollapse: "collapse", fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" }}>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Original Header</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Canonical Field</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Validation Summary</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Content Validated</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Status</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Submitted By</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 600 }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAliases.map((alias) => {
-                      const norm = (alias.normalized_header || "").trim().toLowerCase();
-                      const isConflict = alias.status === "conflict" || (norm && conflictHeaderSet.has(norm));
-                      return (
-                      <tr key={alias.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
-                          {alias.original_header}
-                          <div style={{ fontSize: 11, color: "#64748b", fontWeight: 400 }}>
-                            normalized: <code>{alias.normalized_header}</code>
-                          </div>
-                        </td>
-                        <td style={{ padding: "12px 16px", fontWeight: 600, color: "#1d4ed8" }}>
-                          <code>{alias.canonical_field}</code>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          {alias.validation_summary ? (
-                            <span
-                              style={{
-                                display: "inline-block",
-                                background: "#f8fafc",
-                                border: "1px solid #e2e8f0",
-                                borderRadius: 6,
-                                padding: "3px 8px",
-                                fontSize: 11,
-                                fontFamily: "monospace",
-                                color: "#334155"
-                              }}
-                            >
-                              {alias.validation_summary}
-                            </span>
-                          ) : (
-                            <span style={{ color: "#94a3b8", fontSize: 12 }}>—</span>
-                          )}
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <span
-                            style={{
-                              padding: "2px 8px",
-                              borderRadius: 6,
-                              fontSize: 11,
-                              fontWeight: 700,
-                              background: alias.validation_passed ? "#dcfce7" : "#fee2e2",
-                              color: alias.validation_passed ? "#166534" : "#991b1b"
-                            }}
-                          >
-                            {alias.validation_passed ? "Passed" : "Unvalidated"}
-                          </span>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <div style={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
-                            <span
-                              style={{
-                                padding: "2px 8px",
-                                borderRadius: 6,
-                                fontSize: 11,
-                                fontWeight: 700,
-                                textTransform: "uppercase",
-                                background:
-                                  alias.status === "approved"
-                                    ? "#dcfce7"
-                                    : alias.status === "pending"
-                                    ? "#fef3c7"
-                                    : "#fee2e2",
-                                color:
-                                  alias.status === "approved"
-                                    ? "#15803d"
-                                    : alias.status === "pending"
-                                    ? "#b45309"
-                                    : "#b91c1c"
-                              }}
-                            >
-                              {alias.status}
-                            </span>
-                            {isConflict && (
+              {filteredAliases.length === 0 ? (
+                <div style={{ padding: 36, textAlign: "center", color: "#64748b", fontSize: 14 }}>
+                  No custom column aliases found matching filter.
+                </div>
+              ) : (
+                <div className="admin-table-scroll-container">
+                  <table style={{ width: "100%", minWidth: 820, borderCollapse: "collapse", fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ background: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" }}>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Original Header</th>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Canonical Field</th>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Validation Summary</th>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Content Validated</th>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Status</th>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Submitted By</th>
+                        <th style={{ padding: "12px 16px", fontWeight: 600 }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredAliases.map((alias) => {
+                        const norm = (alias.normalized_header || "").trim().toLowerCase();
+                        const isConflict = alias.status === "conflict" || (norm && conflictHeaderSet.has(norm));
+                        return (
+                          <tr key={alias.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                            <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
+                              {alias.original_header}
+                              <div style={{ fontSize: 11, color: "#64748b", fontWeight: 400 }}>
+                                normalized: <code>{alias.normalized_header}</code>
+                              </div>
+                            </td>
+                            <td style={{ padding: "12px 16px", fontWeight: 600, color: "#1d4ed8" }}>
+                              <code>{alias.canonical_field}</code>
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
+                              {alias.validation_summary ? (
+                                <span
+                                  style={{
+                                    display: "inline-block",
+                                    background: "#f8fafc",
+                                    border: "1px solid #e2e8f0",
+                                    borderRadius: 6,
+                                    padding: "3px 8px",
+                                    fontSize: 11,
+                                    fontFamily: "monospace",
+                                    color: "#334155"
+                                  }}
+                                >
+                                  {alias.validation_summary}
+                                </span>
+                              ) : (
+                                <span style={{ color: "#94a3b8", fontSize: 12 }}>—</span>
+                              )}
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
                               <span
                                 style={{
-                                  padding: "2px 6px",
+                                  padding: "2px 8px",
                                   borderRadius: 6,
-                                  fontSize: 10,
-                                  fontWeight: 800,
-                                  background: "#fee2e2",
-                                  color: "#b91c1c",
-                                  border: "1px solid #fca5a5"
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  background: alias.validation_passed ? "#dcfce7" : "#fee2e2",
+                                  color: alias.validation_passed ? "#166534" : "#991b1b"
                                 }}
                               >
-                                CONFLICT
+                                {alias.validation_passed ? "Passed" : "Unvalidated"}
                               </span>
-                            )}
-                          </div>
-                        </td>
-                        {/* Submitted By (Name and ID only - NO email) */}
-                        <td style={{ padding: "12px 16px", fontSize: 12, color: "#475569" }}>
-                          {alias.submitted_by_display || alias.submitted_by_name || (alias.submitted_by ? `User #${alias.submitted_by}` : "System")}
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                            {alias.status !== "approved" && (
-                              <button
-                                onClick={() => handleApproveAlias(alias.id)}
-                                disabled={Boolean(actionLoading[`alias_${alias.id}`])}
-                                style={{
-                                  background: "#16a34a",
-                                  color: "#ffffff",
-                                  border: "none",
-                                  borderRadius: 6,
-                                  padding: "5px 10px",
-                                  fontSize: 12,
-                                  fontWeight: 600,
-                                  cursor: "pointer"
-                                }}
-                              >
-                                Approve
-                              </button>
-                            )}
-                            {alias.status !== "rejected" && (
-                              <button
-                                onClick={() => handleRejectAlias(alias.id)}
-                                disabled={Boolean(actionLoading[`alias_${alias.id}`])}
-                                style={{
-                                  background: "#ef4444",
-                                  color: "#ffffff",
-                                  border: "none",
-                                  borderRadius: 6,
-                                  padding: "5px 10px",
-                                  fontSize: 12,
-                                  fontWeight: 600,
-                                  cursor: "pointer"
-                                }}
-                              >
-                                Reject
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleRemoveAlias(alias.id)}
-                              disabled={Boolean(actionLoading[`alias_${alias.id}`])}
-                              style={{
-                                background: "#ffffff",
-                                color: "#dc2626",
-                                border: "1px solid #fecaca",
-                                borderRadius: 6,
-                                padding: "5px 10px",
-                                fontSize: 12,
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 4
-                              }}
-                              title="Permanently remove column alias"
-                            >
-                              <Trash2 size={12} />
-                              <span>Remove</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
+                              <div style={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
+                                <span
+                                  style={{
+                                    padding: "2px 8px",
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    textTransform: "uppercase",
+                                    background:
+                                      alias.status === "approved"
+                                        ? "#dcfce7"
+                                        : alias.status === "pending"
+                                          ? "#fef3c7"
+                                          : "#fee2e2",
+                                    color:
+                                      alias.status === "approved"
+                                        ? "#15803d"
+                                        : alias.status === "pending"
+                                          ? "#b45309"
+                                          : "#b91c1c"
+                                  }}
+                                >
+                                  {alias.status}
+                                </span>
+                                {isConflict && (
+                                  <span
+                                    style={{
+                                      padding: "2px 6px",
+                                      borderRadius: 6,
+                                      fontSize: 10,
+                                      fontWeight: 800,
+                                      background: "#fee2e2",
+                                      color: "#b91c1c",
+                                      border: "1px solid #fca5a5"
+                                    }}
+                                  >
+                                    CONFLICT
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            {/* Submitted By (Name and ID only - NO email) */}
+                            <td style={{ padding: "12px 16px", fontSize: 12, color: "#475569" }}>
+                              {alias.submitted_by_display || alias.submitted_by_name || (alias.submitted_by ? `User #${alias.submitted_by}` : "System")}
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
+                              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                                {alias.status !== "approved" && (
+                                  <button
+                                    onClick={() => handleApproveAlias(alias.id)}
+                                    disabled={Boolean(actionLoading[`alias_${alias.id}`])}
+                                    style={{
+                                      background: "#16a34a",
+                                      color: "#ffffff",
+                                      border: "none",
+                                      borderRadius: 6,
+                                      padding: "5px 10px",
+                                      fontSize: 12,
+                                      fontWeight: 600,
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    Approve
+                                  </button>
+                                )}
+                                {alias.status !== "rejected" && (
+                                  <button
+                                    onClick={() => handleRejectAlias(alias.id)}
+                                    disabled={Boolean(actionLoading[`alias_${alias.id}`])}
+                                    style={{
+                                      background: "#ef4444",
+                                      color: "#ffffff",
+                                      border: "none",
+                                      borderRadius: 6,
+                                      padding: "5px 10px",
+                                      fontSize: 12,
+                                      fontWeight: 600,
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    Reject
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleRemoveAlias(alias.id)}
+                                  disabled={Boolean(actionLoading[`alias_${alias.id}`])}
+                                  style={{
+                                    background: "#ffffff",
+                                    color: "#dc2626",
+                                    border: "1px solid #fecaca",
+                                    borderRadius: 6,
+                                    padding: "5px 10px",
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 4
+                                  }}
+                                  title="Permanently remove column alias"
+                                >
+                                  <Trash2 size={12} />
+                                  <span>Remove</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}

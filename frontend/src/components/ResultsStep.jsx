@@ -28,6 +28,7 @@ export default function ResultsStep({
   const [wpiFilter, setWpiFilter] = useState("");
   const [rowsLoading, setRowsLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [forceTableMobile, setForceTableMobile] = useState(false);
   const [analysisMeta, setAnalysisMeta] = useState(null);
 
@@ -125,6 +126,31 @@ export default function ResultsStep({
     }
   };
 
+  const handleDownloadSummaryPdf = async () => {
+    if (!analysisId) return;
+    setDownloadingPdf(true);
+    try {
+      const res = await fetch(`${apiBaseUrl}/analyses/${analysisId}/summary.pdf`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Download failed");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const compName = (analysisMeta?.company_name || companyDetails?.name || "ASSETRA").replace(/\s+/g, "_");
+      a.download = `Valuation_Summary_${compName}_${analysisId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      alert("Failed to download PDF summary. Please try again.");
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   const fmtINR = (val) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -194,6 +220,24 @@ export default function ResultsStep({
   return (
     <div style={{ maxWidth: 1400, margin: "0 auto", width: "100%" }}>
       <style>{`
+        .far-results-header-actions {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 767px) {
+          .far-results-header-actions {
+            width: 100% !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            align-items: stretch !important;
+          }
+          .far-results-header-actions .far-btn {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+        }
         .far-filter-toolbar {
           background: #fff;
           border: 1px solid #E2E8F0;
@@ -207,7 +251,25 @@ export default function ResultsStep({
           justify-content: space-between;
         }
         @media (max-width: 767px) {
-          .far-filter-toolbar {
+          .far-results-header-actions {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 767px) {
+          .far-results-header-actions {
+            width: 100% !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            align-items: stretch !important;
+          }
+          .far-results-header-actions .far-btn {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+        }
+        .far-filter-toolbar {
             padding: 12px 14px;
             gap: 10px;
           }
@@ -286,7 +348,7 @@ export default function ResultsStep({
           </p>
         </div>
 
-        <div className="far-btn-container" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div className="far-btn-container far-results-header-actions">
           {onBack && (
             <button
               onClick={onBack}
@@ -311,6 +373,30 @@ export default function ResultsStep({
           )}
 
           <button
+            onClick={handleDownloadSummaryPdf}
+            disabled={downloadingPdf}
+            style={{
+              background: "#0F172A",
+              color: "#fff",
+              border: "1px solid #1E293B",
+              padding: "10px 20px",
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              minHeight: 44,
+              boxShadow: "0 2px 4px rgba(15,23,42,0.15)"
+            }}
+            className="far-btn far-btn-download-pdf"
+          >
+            {downloadingPdf ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
+            Download Summary (PDF)
+          </button>
+
+          <button
             onClick={handleDownloadReport}
             disabled={downloading}
             style={{
@@ -328,7 +414,7 @@ export default function ResultsStep({
               minHeight: 44,
               boxShadow: "0 2px 4px rgba(37,99,235,0.2)"
             }}
-            className="far-btn"
+            className="far-btn far-btn-download-excel"
           >
             {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
             Download Report (Excel)
